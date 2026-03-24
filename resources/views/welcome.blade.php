@@ -21,5 +21,29 @@
     </head>
     <body>
     <button class="btn btn-accent">Accent</button>
+    <!-- Open the modal using ID.showModal() method -->
+    <button class="btn" onclick="my_modal_5.showModal()">open modal</button>
+    <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Hello!</h3>
+            <p class="py-4">Press ESC key or click the button below to close</p>
+            <div class="modal-action">
+                <form method="dialog">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="btn">Close</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+
+    <div class="card card-border bg-base-100 w-96">
+        <div class="card-body">
+            <h2 class="card-title">Card Title</h2>
+            <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+            <div class="card-actions justify-end">
+                <button class="btn btn-primary">Buy Now</button>
+            </div>
+        </div>
+    </div>
     </body>
 </html>
