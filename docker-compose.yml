@@ -1,0 +1,14 @@
+services:
+  pgsql:
+    image: 'postgres:15-alpine' # Wersja 15 jest bardzo stabilna
+    ports:
+      - '5432:5432' # Domyślny port dla Postgresa
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+    volumes:
+      - 'sail-pgsql:/var/lib/postgresql/data'
+
+volumes:
+  sail-pgsql:
+    driver: local
