@@ -20,21 +20,29 @@
         @endif
     </head>
     <body>
-    <button class="btn btn-accent">Accent</button>
-    <!-- Open the modal using ID.showModal() method -->
-    <button class="btn" onclick="my_modal_5.showModal()">open modal</button>
-    <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">Hello!</h3>
-            <p class="py-4">Press ESC key or click the button below to close</p>
-            <div class="modal-action">
-                <form method="dialog">
-                    <!-- if there is a button in form, it will close the modal -->
-                    <button class="btn">Close</button>
-                </form>
-            </div>
+    <!--
+  * Import Cally web component from CDN
+  <script type="module" src="https://unpkg.com/cally"></script>
+
+  * Or install as a dependency:
+  npm i cally
+  * and import it in JS
+  import "cally";
+  -->
+
+    <calendar-date class="cally bg-base-100 border border-base-300 shadow-lg rounded-box">
+        <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+        <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+        <calendar-month></calendar-month>
+    </calendar-date>
+
+
+    <div tabindex="0" class="collapse collapse-arrow bg-base-100 border-base-300 border">
+        <div class="collapse-title font-semibold after:start-5 after:end-auto pe-4 ps-12">How do I create an account?</div>
+        <div class="collapse-content text-sm">
+            Click the "Sign Up" button in the top right corner and follow the registration process.
         </div>
-    </dialog>
+    </div>
 
     <div class="card card-border bg-base-100 w-96">
         <div class="card-body">
