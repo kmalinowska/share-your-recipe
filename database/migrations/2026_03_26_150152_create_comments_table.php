@@ -21,7 +21,8 @@ return new class extends Migration
 
             $table->text('content');
 
-            $table->foreignUuid('parent_id')->nullable()->constrained('comments')->nullOnDelete();
+            $table->uuid('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('comments')->nullOnDelete();
             $table->timestamp('created_at')->useCurrent();
 
             //indexes
