@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -29,5 +30,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    //relations
+    // user can have many recipes
+    public function recipes(): HasMany {
+        return $this->hasMany(Recipe::class);
+    }
+    //user can have many favourites
+    public function favourites(): HasMany {
+        return $this->hasMany(Favourite::class);
+    }
+    //user can have many comments
+    public function comments():HasMany {
+        return $this->hasMany(Comment::class);
     }
 }
