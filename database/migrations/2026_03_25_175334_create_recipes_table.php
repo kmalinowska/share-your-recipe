@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('recipes', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->uuid('id')->primary();
             $table->string('title');
             $table->string('slug')->unique(); // automatically generated from title
             $table->text('preparation')->nullable();

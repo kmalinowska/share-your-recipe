@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(\Illuminate\Support\Facades\DB::raw('gen_random_uuid()'));
+            $table->uuid('id')->primary();
             $table->string('name');                  // np. "Breakfast"
             $table->string('slug')->unique();        // np. "breakfast"
         });
