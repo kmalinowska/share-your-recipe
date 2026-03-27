@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Category;
@@ -16,8 +17,15 @@ class RecipeSeeder extends Seeder
     public function run(): void
     {
         // Download user
-        $test = User::where('email', 'test@gmail.com')->firstOrFail();
-        $test2 = User::where('email', 'test2@gmail.com')->firstOrFail();
+        $test = User::firstOrCreate(
+            ['email' => 'test@gmail.com'],
+            ['name' => 'Test User', 'password' => Hash::make('password')]
+        );
+
+        $test2 = User::firstOrCreate(
+            ['email' => 'test2@gmail.com'],
+            ['name' => 'Test User 2', 'password' => Hash::make('password')]
+        );
 
         // Download categories by slug
         $breakfast = Category::where('slug', 'breakfast')->first();
@@ -36,7 +44,7 @@ class RecipeSeeder extends Seeder
                 'preparation' => "Płatki owsiane zalej gorącym mlekiem i odstaw na 5 minut.\n"
                     . "Dodaj pokrojone owoce, miód i posyp ziarnami chia.\n"
                     . "Podawaj od razu w miseczce.",
-                'time' => 10,
+                'preparation_time' => 10,
                 'tags' => ['healthy', 'quick', 'vegetarian'],
                 'ingredients' => [
                     ['name' => 'płatki owsiane', 'quantity' => '80', 'unit' => 'gram'],
@@ -55,7 +63,7 @@ class RecipeSeeder extends Seeder
                     . "Awokado obierz i pokrój w kostkę, skrop sokiem z cytryny.\n"
                     . "Wymieszaj rukolę, kurczaka, awokado i pomidorki cherry.\n"
                     . "Polej oliwą i dopraw solą, pieprzem.",
-                'time' => 25,
+                'preparation_time' => 25,
                 'tags' => ['healthy', 'high-protein'],
                 'ingredients' => [
                     ['name' => 'pierś z kurczaka', 'quantity' => '200', 'unit' => 'gram'],
@@ -76,7 +84,7 @@ class RecipeSeeder extends Seeder
                     . "Odlej szklankę wody z makaronu, odcedź makaron.\n"
                     . "Zdejmij patelnię z ognia, dodaj makaron i boczek.\n"
                     . "Wlej mieszankę jajeczną i szybko wymieszaj, rozcieńczając wodą z makaronu.",
-                'time' => 30,
+                'preparation_time' => 30,
                 'tags' => ['italian', 'pasta', 'classic'],
                 'ingredients' => [
                     ['name' => 'makaron spaghetti', 'quantity' => '200', 'unit' => 'gram'],
@@ -95,7 +103,7 @@ class RecipeSeeder extends Seeder
                     . "Połącz z czekoladą, dodaj mąkę i kakao, wymieszaj.\n"
                     . "Przelej do formy wyłożonej papierem.\n"
                     . "Piecz 20 minut w 180°C — środek ma być lekko wilgotny.",
-                'time' => 40,
+                'preparation_time' => 40,
                 'tags' => ['chocolate', 'baking', 'sweet'],
                 'ingredients' => [
                     ['name' => 'czekolada gorzka', 'quantity' => '200', 'unit' => 'gram'],
@@ -113,7 +121,7 @@ class RecipeSeeder extends Seeder
                 'preparation' => "Wszystkie składniki wrzuć do blendera.\n"
                     . "Blenduj przez 60 sekund na najwyższych obrotach.\n"
                     . "Przelej do szklanki i podawaj od razu.",
-                'time' => 5,
+                'preparation_time' => 5,
                 'tags' => ['vegan', 'healthy', 'quick'],
                 'ingredients' => [
                     ['name' => 'szpinak świeży', 'quantity' => '60', 'unit' => 'gram'],
@@ -132,7 +140,7 @@ class RecipeSeeder extends Seeder
                     . "Dodaj upieczoną dynię, zalej bulionem, gotuj 10 minut.\n"
                     . "Zblenduj na krem, dopraw solą, pieprzem i gałką muszkatołową.\n"
                     . "Podawaj z łyżką śmietany i pestkami dyni.",
-                'time' => 50,
+                'preparation_time' => 50,
                 'tags' => ['soup', 'vegetarian', 'autumn'],
                 'ingredients' => [
                     ['name' => 'dynia hokkaido', 'quantity' => '800', 'unit' => 'gram'],
@@ -159,8 +167,8 @@ class RecipeSeeder extends Seeder
                     'category_id' => $data['category']->id,
                     'title' => $data['title'],
                     'preparation' => $data['preparation'],
-                    'time' => $data['time'],
-                    'image' => null,
+                    'preparation_time' => $data['preparation_time'],
+                    'image_path' => null,
                 ]
             );
 
