@@ -17,7 +17,7 @@ class Recipe extends Model
       'title',
       'slug',
       'preparation',
-      'time_preparation',
+      'preparation_time',
       'image_path'
     ];
 
