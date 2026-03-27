@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('recipe_ingredients', function (Blueprint $table) {
-            $table->uuid('id')->primary();
             $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
             $table->foreignUuid('ingredient_id')->constrained('ingredients')->restrictOnDelete();
             $table->string('quantity');         // np. "50", "2", "1/2"
