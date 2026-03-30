@@ -20,38 +20,11 @@
         @endif
     </head>
     <body>
-    <!--
-  * Import Cally web component from CDN
-  <script type="module" src="https://unpkg.com/cally"></script>
-
-  * Or install as a dependency:
-  npm i cally
-  * and import it in JS
-  import "cally";
-  -->
-
-    <calendar-date class="cally bg-base-100 border border-base-300 shadow-lg rounded-box">
-        <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-        <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
-        <calendar-month></calendar-month>
-    </calendar-date>
-
-
-    <div tabindex="0" class="collapse collapse-arrow bg-base-100 border-base-300 border">
-        <div class="collapse-title font-semibold after:start-5 after:end-auto pe-4 ps-12">How do I create an account?</div>
-        <div class="collapse-content text-sm">
-            Click the "Sign Up" button in the top right corner and follow the registration process.
+    <x-app-layout>
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">Welcome to Share Your Recipe</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Discover and share your favourite recipes</p>
         </div>
-    </div>
-
-    <div class="card card-border bg-base-100 w-96">
-        <div class="card-body">
-            <h2 class="card-title">Card Title</h2>
-            <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-            <div class="card-actions justify-end">
-                <button class="btn btn-primary">Buy Now</button>
-            </div>
-        </div>
-    </div>
+    </x-app-layout>
     </body>
 </html>
