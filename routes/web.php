@@ -1,20 +1,33 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\FavouriteController;
 use Illuminate\Support\Facades\Route;
 
+// Home
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
+// Dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Profile (with auth)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Recipes
+Route::resource('recipes', RecipeController::class);
+
+// Favourites
+Route::get('favourites', [FavouriteController::class, 'index'])
+    ->middleware('auth')->name('favourites.index');
+
+// Auth routes (login, register, logout)
 require __DIR__.'/auth.php';
