@@ -1,4 +1,4 @@
-<nav class="navbar bg-base-100 dark:bg-gray-800 border-b border-base-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
+<nav class="navbar bg-base-100 border-b border-base-200 sticky top-0 z-50 shadow-sm">
     {{--    LEFT: logo + title--}}
     <div class="navbar-start">
         <a href="{{ route('home') }}" class="flex items-center gap-2 ml-1 hover:opacity-80 transition">
