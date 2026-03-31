@@ -1,3 +1,5 @@
+@props(['$navCategories' => collect()]);
+
 <div class="drawer lg:drawer-open">
     <input id="main-drawer" type="checkbox" class="drawer-toggle">
 
