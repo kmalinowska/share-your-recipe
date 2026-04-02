@@ -7,10 +7,8 @@
             {{-- System notifications / Flash messages --}}
             <x-layouts.flash />
             {{-- Main Page Content --}}
-            <main class="flex-1 p-4">
-                <div class="max-w-7xl mx-auto">
-                    {{ $slot }}
-                </div>
+            <main class="flex-1">
+                {{ $slot }}
             </main>
             {{-- Footer --}}
             <x-layouts.footer />
