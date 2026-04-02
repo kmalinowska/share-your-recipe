@@ -1,14 +1,13 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\FavouriteController;
 use Illuminate\Support\Facades\Route;
 
 // Home
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', HomeController::class, 'index')->name('home');
 
 // Dashboard
 Route::get('/dashboard', function () {
