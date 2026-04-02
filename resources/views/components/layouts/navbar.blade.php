@@ -1,6 +1,6 @@
 <nav class="navbar bg-base-100 border-b border-base-200 sticky top-0 z-50 shadow-sm">
     {{--    LEFT: logo + title--}}
-    <div class="navbar-start">
+    <div class="navbar-start w-auto">
         <a href="{{ route('home') }}" class="flex items-center gap-2 ml-1 hover:opacity-80 transition">
             {{-- Logotype & page title --}}
             <div class="avatar">
@@ -14,12 +14,39 @@
         </a>
     </div>
 
+    {{-- CENTER: SEARCH BAR (Desktop only) --}}
+    <div class="navbar-center hidden md:flex flex-1 max-w-md mx-8">
+        <x-search-bar class="w-full" />
+    </div>
+
     {{-- RIGHT: MENU + HAMBURGER --}}
-    <div class="navbar-end flex items-center gap-2">
+    <div class="navbar-end w-auto flex-1 gap-1">
+
+        {{-- MOBILE SEARCH BUTTON (Lupka) --}}
+        <div class="dropdown dropdown-end md:hidden">
+            <button tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                <svg class="h-6 w-6 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </g>
+                </svg>
+            </button>
+
+            <div tabindex="0"
+                 class="dropdown-content z-[100] mt-4 p-4 shadow-2xl bg-base-100 border border-base-200 rounded-3xl
+                fixed left-1/2 -translate-x-1/2 w-[92vw] max-w-lg top-16">
+
+                <div class="flex flex-col gap-2">
+                    <x-search-bar />
+                    <p class="text-[10px] opacity-40 px-4 uppercase font-bold tracking-widest">Use keyword</p>
+                </div>
+            </div>
+        </div>
 
         {{-- DESKTOP MENU --}}
         <div class="hidden lg:flex">
-            <ul class="menu menu-horizontal px-1 gap-1 text-sm">
+            <ul class="menu menu-horizontal px-1 gap-1 text-sm font-medium">
                 <li>
                     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active font-semibold' : '' }}">
                         <x-heroicon-o-home class="size-6"/>

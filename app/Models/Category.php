@@ -12,6 +12,8 @@ class Category extends Model
     use HasUuids;
 
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
       'name',
