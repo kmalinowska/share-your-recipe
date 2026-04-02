@@ -1,5 +1,5 @@
 <form action="{{ route('recipes.index') }}" method="GET" {{ $attributes->merge(['class' => 'w-full']) }}>
-    <label class="input input-bordered flex items-center gap-2 rounded-2xl bg-base-200/50 border-none focus-within:bg-base-100 focus-within:ring-2 focus-within:ring-primary/30 transition-all h-12 pr-1">
+    <label class="input input-bordered flex items-center gap-2 rounded-2xl bg-base-200/50 border-none focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:bg-base-100 transition-all h-12 pr-1">
         <input type="search"
                name="search"
                value="{{ request('search') }}"
