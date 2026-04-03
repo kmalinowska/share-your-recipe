@@ -15,7 +15,7 @@ class HomeController extends Controller
         $categories = Category::orderBy('name')->get();
 
         // Download the 6 newest recipes with reference to the author and category
-        $latestRecipes = Recipe::with(['user', 'category'])
+        $latestRecipes = Recipe::with(['user', 'category', 'tags'])
             ->latest()
             ->limit(6)
             ->get();
