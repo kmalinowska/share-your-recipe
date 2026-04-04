@@ -21,8 +21,8 @@ class HomeController extends Controller
             ->get();
 
         // 10 last comments from all recipes
-        $recentComments = Comment::with(['user', 'recipe'])
-            ->whereNull('parent_id') // only main, without answers
+        $recentComments = Comment::with(['user', 'recipe', 'parent.user'])
+//            ->whereNull('parent_id') // only main, without answers
             ->latest()
             ->limit(10)
             ->get();
