@@ -3,7 +3,8 @@
 <section class="py-8">
     <div class="flex justify-between items-center mb-8">
         <h2 class="text-3xl font-black italic tracking-tight uppercase">Latest Recipes</h2>
-        <a href="{{ route('recipes.index') }}" class="btn btn-ghost btn-sm gap-2 text-primary hover:bg-primary/10 transition-all">
+        <a href="{{ route('recipes.index') }}"
+           class="btn bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white hover:border-primary btn-sm gap-2 transition-all shadow-sm">
             View All
             <x-heroicon-m-arrow-right class="size-4"/>
         </a>
