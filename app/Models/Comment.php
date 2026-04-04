@@ -12,7 +12,8 @@ class Comment extends Model
 {
     use HasFactory, HasUuids;
 
-    public $timestamps = false;
+    public $timestamps = true;
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'recipe_id',
@@ -21,6 +22,10 @@ class Comment extends Model
         'content',
         'parent_id',
         ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
 
     //relations
     //comment belongs to recipe
