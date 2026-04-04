@@ -21,11 +21,21 @@
                             {{ $comment->author_name ?? 'Guest User' }}</span>
                     </div>
 
-                    {{-- Data dodania --}}
+                    {{-- Add date --}}
                     <span class="text-[10px] opacity-40 font-medium uppercase tracking-tighter">
                         {{ $comment->created_at->diffForHumans() }}
                     </span>
                 </div>
+
+                    {{--  Parent  --}}
+                @if($comment->parent)
+                    <div class="ml-11 mb-2 px-2 py-1 bg-base-200/50 rounded-lg border-l-2 border-primary/30">
+                        <p class="text-[10px] opacity-60 leading-tight">
+                            <span class="font-bold text-primary/70">Reply to {{ $comment->parent->author_name }}:</span>
+                            <span class="line-clamp-1 italic">"{{ $comment->parent->content }}"</span>
+                        </p>
+                    </div>
+                @endif
 
                 <p class="text-sm opacity-75 italic line-clamp-2 leading-relaxed px-1">
                     "{{ $comment->content }}"
