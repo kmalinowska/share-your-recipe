@@ -14,9 +14,9 @@
                     <x-latest-recipes :recipes="$latestRecipes" />
                 </div>
                 {{-- Sidebar with comments --}}
-    {{--        <aside>--}}
-    {{--            <x-recent-comments :comments="$recentComments" />--}}
-    {{--         </aside>--}}
+                <aside>
+                    <x-recent-comments :comments="$recentComments" />
+                </aside>
             </div>
         </div>
     </div>
