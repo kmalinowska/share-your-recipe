@@ -7,10 +7,16 @@
 ])
 
 <div class="relative h-96 sm:h-[500px] md:h-[600px] flex items-center justify-center text-center bg-cover bg-center"
-     style="background-image: url('{{asset('/storage/images/cooking-background.jpg')}}');">
+     style="background-image: url('{{asset('/storage/images/hero.jpg')}}');">
 
-    <!-- Gradient / Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/50"></div>
+    {{-- 1. Slightly darken the entire photo --}}
+    <div class="absolute inset-0 bg-black/30 z-[1]"></div>
+
+    {{-- 2. INNER FRAME (Passe-partout) --}}
+    <div class="absolute inset-1 sm:inset-10 border-2 border-white/20 z-[2] rounded-xl pointer-events-none">
+        {{-- Additional shadow inside the frame to add depth --}}
+        <div class="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.6)] rounded-lg"></div>
+    </div>
 
     <!-- Content -->
     <div class="relative z-10 px-4 sm:px-6 md:px-8">

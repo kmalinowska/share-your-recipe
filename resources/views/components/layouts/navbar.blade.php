@@ -5,7 +5,7 @@
             {{-- Logotype & page title --}}
             <div class="avatar">
                 <div class="ring-primary ring-offset-base-100 w-10 h-10 rounded-full ring-2 ring-offset-2">
-                    <img src="{{ asset('storage/images/main_logo.jpg') }}" alt="Share Your Recipe Logo" />
+                    <img src="{{ asset('storage/images/logo.jpg') }}" alt="Share Your Recipe Logo" />
                 </div>
             </div>
             <span class="font-extrabold text-xl hidden sm:inline tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
