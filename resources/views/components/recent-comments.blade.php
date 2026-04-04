@@ -11,10 +11,17 @@
             <div class="group mb-6 last:mb-0 pb-6 last:pb-0 border-b last:border-0 border-base-200">
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-3">
-                        <div class="avatar placeholder">
+                        <div class="avatar {{ !$comment->user?->avatar ? 'placeholder' : '' }}">
                             <div class="bg-primary/10 text-primary rounded-full w-8 ring-1 ring-primary/10">
-                                <span class="text-xs font-bold uppercase">
-                                    {{ substr($comment->author_name ?? 'G', 0, 1) }}</span>
+                                @if($comment->user?->avatar_url)
+                                    {{-- Displays the photo if it exists --}}
+                                    <img src="{{ asset('storage/' . $comment->user->avatar) }}" alt="{{ $comment->author_name }}" />
+                                @else
+                                    {{-- Displays initial if no photo or guest --}}
+                                    <span class="text-xs font-bold uppercase">
+                {{ substr($comment->author_name ?? 'G', 0, 1) }}
+            </span>
+                                @endif
                             </div>
                         </div>
                         <span class="font-bold text-sm tracking-tight">
