@@ -18,18 +18,18 @@ class UserSeeder extends Seeder
     {
         // Main test user - known password for logging in during development
         User::firstOrCreate(
-            ['email' => 'test@gmail.com'],
+            ['email' => 'user@example.com'],
             [
-                'name'     => 'Test User',
+                'name'     => 'user',
                 'password' => Hash::make('password'),
                 'avatar'   => null,
             ]
         );
 
         User::firstOrCreate(
-            ['email' => 'test2@gmail.com'],
+            ['email' => 'user2@example.com'],
             [
-                'name'     => 'Test User2',
+                'name'     => 'user2',
                 'password' => Hash::make('password'),
                 'avatar'   => null,
             ]
