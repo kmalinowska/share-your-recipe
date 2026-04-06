@@ -3,8 +3,8 @@
 <div class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-md transition-all duration-300 rounded-[2rem] overflow-hidden group">
     {{-- Image section --}}
     <figure class="relative h-56 w-full overflow-hidden">
-        @if($recipe->image)
-            <img src="{{ asset('storage/' . $recipe->image) }}"
+        @if($recipe->image_path)
+            <img src="{{ Str::startsWith($recipe->image_path, 'http') ? $recipe->image_path : asset('storage/' . $recipe->image_path) }}"
                  alt="{{ $recipe->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         @else
