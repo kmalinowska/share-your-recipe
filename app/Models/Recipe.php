@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Recipe extends Model
 {
@@ -21,6 +22,22 @@ class Recipe extends Model
       'preparation_time',
       'image_path'
     ];
+
+    protected static function booted(): void {
+        static::creating(function (Recipe $recipe) {
+            if(empty($recipe->slug)) {
+                $slug = Str::slug($recipe->title);
+                $originalSlug = $slug;
+                $count = 1;
+
+                // Check if slug is existing already
+                while(static::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $count++;
+                }
+                $recipe->slug = $slug;
+            }
+        });
+    }
 
     //relations
     //recipe belongs to user
