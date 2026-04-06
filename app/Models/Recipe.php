@@ -24,7 +24,7 @@ class Recipe extends Model
     ];
 
     protected static function booted(): void {
-        static::creating(function (Recipe $recipe) {
+        static::creating(function (Recipe $recipe):void {
             if(empty($recipe->slug)) {
                 $slug = Str::slug($recipe->title);
                 $originalSlug = $slug;

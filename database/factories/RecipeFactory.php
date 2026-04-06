@@ -36,7 +36,6 @@ class RecipeFactory extends Factory
             // Requires $this->seed(CategorySeeder::class) in test beforeEach
             'category_id'      => fn() => Category::inRandomOrder()->first()?->id,
             'title'            => $title,
-            'slug'             => Str::slug($title), //. '-' . fake()->unique()->numberBetween(1, 9999),
             'preparation'      => fake()->paragraphs(2, true),
             'preparation_time' => fake()->randomElement([5, 10, 15, 20, 30, 45, 60, 90]),
             'image_path'       => null,
