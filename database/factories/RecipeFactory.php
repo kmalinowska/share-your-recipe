@@ -34,7 +34,7 @@ class RecipeFactory extends Factory
         return [
             'user_id'          => User::factory(),
             // Requires $this->seed(CategorySeeder::class) in test beforeEach
-            'category_id'      => fn() => Category::inRandomOrder()->first()?->id,
+            'category_id'      => Category::factory(),
             'title'            => $title,
             'preparation'      => fake()->paragraphs(2, true),
             'preparation_time' => fake()->randomElement([5, 10, 15, 20, 30, 45, 60, 90]),
