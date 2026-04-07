@@ -38,14 +38,20 @@ class RecipeFactory extends Factory
             'title'            => $title,
             'preparation'      => fake()->paragraphs(2, true),
             'preparation_time' => fake()->randomElement([5, 10, 15, 20, 30, 45, 60, 90]),
-            'image_path'       => null,
+            'image_path'       => function (array $attributes) {
+            $category = Category::find($attributes['category_id']);
+            $categorySlug = $category ? $category->slug : 'food';
+            $cleanTitle = Str::lower(preg_replace('/[^A-Za-z0-9 ]/', '', $attributes['title']));
+            $titleTags = str_replace(' ', ',', $cleanTitle);
+            return "https://loremflickr.com/800/600/food,{$categorySlug},{$titleTags}/all";
+            }
         ];
     }
 
     // State: recipe with an image
     public function withImage(): static
     {
-        return $this->state(['image_path' => 'recipes/test-image.jpg']);
+        return $this->state(['image_path' => 'images/test-image.jpg']);
     }
 
     // State: recipe for a specific user
