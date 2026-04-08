@@ -160,7 +160,7 @@ class RecipeSeeder extends Seeder
 
         foreach ($recipesData as $data) {
             $categorySlug = $data['category']->slug;
-            $firstTag = !empty($data['tags']) ? $data['tags'][0] : '';
+            $firstTag = !empty($data['tags']) ? Str::slug($data['tags'][0]) : '';
             $searchQuery = $categorySlug . ($firstTag ? ',' . $firstTag : '');
             // 1. Create or find a recipe
             $recipe = Recipe::firstOrCreate(
@@ -187,13 +187,13 @@ class RecipeSeeder extends Seeder
             }
 
             // 3. Tags - firstOrCreate in dictionary, then sync via Eloquent
-            $tagIds = [];
-            foreach ($data['tags'] as $tagName) {
-                $tag = Tag::firstOrCreate(['name' => $tagName]);
-                $tagIds[] = $tag->id;
-            }
+            $tagIds = collect($data['tags'])->map(function ($tagName) {
+                return Tag::firstOrCreate(
+                    ['slug' => Str::slug($tagName)],
+                    ['name' => $tagName]
+                )->id;
+            });
             $recipe->tags()->sync($tagIds);
-
             $createdRecipes[] = $recipe;
         }
 
