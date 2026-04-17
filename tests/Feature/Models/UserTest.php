@@ -56,7 +56,6 @@ it('correctly identifies admin and regular users', function () {
  * Relationships
  */
 
-/* with RecipeFactory
 it('can have multiple recipes associated with it', function () {
     $user = User::factory()->create();
 
@@ -68,4 +67,4 @@ it('can have multiple recipes associated with it', function () {
     expect($user->recipes)->toHaveCount(3)
         ->and($user->recipes->first())->toBeInstanceOf(Recipe::class);
 });
-*/
+
