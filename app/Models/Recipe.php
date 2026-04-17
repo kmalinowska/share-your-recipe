@@ -5,23 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+#[Fillable([
+    'user_id',
+    'category_id',
+    'title',
+    'slug',
+    'preparation',
+    'preparation_time',
+    'image_path'
+])]
 class Recipe extends Model
 {
     use HasUuids, HasFactory;
-    protected $fillable = [
-      'user_id',
-      'category_id',
-      'title',
-      'slug',
-      'preparation',
-      'preparation_time',
-      'image_path'
-    ];
 
     protected static function booted(): void {
         static::creating(function (Recipe $recipe):void {
