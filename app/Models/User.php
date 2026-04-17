@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'avatar'])]
+#[Fillable(['name', 'email', 'password', 'avatar', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -24,6 +24,11 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+    public function isAdmin(): bool {
+        return $this->role === 'admin';
+    }
+
     protected function casts(): array
     {
         return [
