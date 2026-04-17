@@ -16,6 +16,17 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name'     => 'Admin',
+                'password' => Hash::make('password'),
+                'avatar' => null,
+                'role'     => 'admin',
+            ]
+        );
+
         // Main test user - known password for logging in during development
         User::firstOrCreate(
             ['email' => 'user@example.com'],
@@ -23,6 +34,7 @@ class UserSeeder extends Seeder
                 'name'     => 'user',
                 'password' => Hash::make('password'),
                 'avatar'   => null,
+                'role' => 'user'
             ]
         );
 
@@ -32,6 +44,7 @@ class UserSeeder extends Seeder
                 'name'     => 'user2',
                 'password' => Hash::make('password'),
                 'avatar'   => null,
+                'role' => 'user'
             ]
         );
 
