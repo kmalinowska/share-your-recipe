@@ -14,14 +14,16 @@ return new class extends Migration
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('title');
-            $table->string('slug')->unique(); // automatically generated from title
-            $table->text('preparation')->nullable();
-            $table->unsignedInteger('preparation_time')->nullable(); // time in minutes
-            $table->string('image_path')->nullable(); // path to photo
-            $table->timestamps();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('category_id')->constrained('categories')->restrictOnDelete();
+
+            $table->string('title');
+            $table->string('slug')->unique(); // automatically generated from title
+            $table->text('preparation');
+            $table->unsignedInteger('preparation_time')->default(20); // time in minutes
+            $table->string('image_path')->nullable(); // path to photo
+            $table->timestamps();
+
         });
     }
 
