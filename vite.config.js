@@ -13,7 +13,7 @@ export default defineConfig({
     server: {
         host: '0.0.0.0', // Wymusza nasłuchiwanie na wszystkich IP
         port: 5173,      // Jawne określenie portu
-        origin: 'http://192.168.1.143:5173',
+        origin: 'http://192.168.0.3:5173',
         strictPort: true,
 
         watch: {
