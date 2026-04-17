@@ -5,8 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
+#[Fillable([
+    'recipe_id',
+    'user_id',
+    'guest_name',
+    'content',
+    'parent_id'
+])]
 
 class Comment extends Model
 {
@@ -14,14 +23,6 @@ class Comment extends Model
 
     public $timestamps = true;
     const UPDATED_AT = null;
-
-    protected $fillable = [
-        'recipe_id',
-        'user_id',
-        'guest_name',
-        'content',
-        'parent_id',
-        ];
 
     protected $casts = [
         'created_at' => 'datetime',
