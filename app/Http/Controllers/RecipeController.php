@@ -14,12 +14,10 @@ class RecipeController extends Controller
             ->latest()
             ->paginate(4);
 
-        // retrieve the ID of favorite recipes only for the logged in user
-        $userFavourites = auth()->check()
-            ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
-            : [];
-
-        return view('recipes.index', compact('recipes', 'userFavourites'));
+        return view('recipes.index', [
+            'recipes' => $recipes,
+            'userFavourites' => $this->getUserFavourites()
+        ]);
     }
 
     // Displays details of a specific recipe
@@ -48,7 +46,15 @@ class RecipeController extends Controller
 
         return view('recipes.index', [
             'recipes' => $recipes,
-            'currentCategory' => $category
+            'currentCategory' => $category,
+            'userFavourites' => $this->getUserFavourites()
         ]);
+    }
+
+    // retrieve the ID of favorite recipes only for the logged in user
+    private function getUserFavourites(): array {
+        return auth()->check()
+            ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
+            : [];
     }
 }
