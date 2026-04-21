@@ -2,6 +2,25 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+            {{-- Categories as quick filters (Pills) --}}
+            <div class="mb-8 flex flex-wrap gap-2 items-center">
+                {{-- Przycisk "All" --}}
+                <a href="{{ route('recipes.index') }}"
+                   class="btn btn-sm rounded-full border-2
+                    {{ !isset($currentCategory) ? 'btn-primary ring-2 ring-primary ring-offset-2' : 'border-dashed border-base-300 opacity-70' }}">
+                    ✨ Show All
+                </a>
+
+                <div class="divider divider-horizontal mx-0 h-8 opacity-20"></div>
+
+                @foreach($navCategories as $cat)
+                    <a href="{{ route('recipes.category', $cat->slug) }}"
+                       class="btn btn-sm rounded-full transition-all {{ (isset($currentCategory) && $currentCategory->slug === $cat->slug) ? 'btn-primary shadow-md' : 'btn-outline border-base-300 hover:border-primary' }}">
+                        {{ $cat->name }}
+                    </a>
+                @endforeach
+            </div>
+
             {{-- Heading --}}
             <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
