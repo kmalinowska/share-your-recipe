@@ -65,8 +65,8 @@
                             <li><hr class="my-1 border-base-200 dark:border-gray-600"></li>
                             @foreach($navCategories as $cat)
                                 <li>
-                                    <a href="{{ route('recipes.index', ['category' => $cat->slug]) }}"
-                                       class="{{ request('category') === $cat->slug ? 'active' : '' }}">
+                                    <a href="{{ route('recipes.category', $cat->slug) }}"
+                                       class="{{ request()->route('category')?->slug === $cat->slug ? 'active' : '' }}">
                                         {{ $cat->name }}
                                     </a>
                                 </li>
