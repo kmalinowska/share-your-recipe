@@ -29,6 +29,11 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function hasFavourite(Recipe $recipe): bool
+    {
+        return $this->favourites()->where('recipe_id', $recipe->id)->exists();
+    }
+
     protected function casts(): array
     {
         return [
