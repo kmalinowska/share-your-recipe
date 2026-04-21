@@ -14,9 +14,18 @@
                     All Recipes</summary>
                 <ul>
                     <li>
-                        <a href="{{ route('recipes.index') }}">All</a></li>
+                        <a href="{{ route('recipes.index') }}"
+                           class="{{ request()->routeIs('recipes.index') && !request()->route('category') ? 'active' : '' }}">
+                            All
+                        </a>
+                    </li>
                     @foreach($navCategories as $cat)
-                        <li><a href="{{ route('recipes.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a></li>
+                        <li>
+                            <a href="{{ route('recipes.category', $cat->slug) }}"
+                               class="{{ request()->route('category')?->slug === $cat->slug ? 'active font-bold text-primary' : '' }}">
+                                {{ $cat->name }}
+                            </a>
+                        </li>
                     @endforeach
                 </ul>
             </details>

@@ -11,7 +11,7 @@
         {{-- Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($categories as $category)
-                <a href="{{ route('recipes.index', ['category' => $category->slug]) }}"
+                <a href="{{ route('recipes.category', $category->slug) }}"
                    class="group relative aspect-video overflow-hidden rounded-[2.5rem] shadow-lg hover:shadow-2xl transition-all duration-500 border border-base-200">
 
                     {{-- Photos --}}
