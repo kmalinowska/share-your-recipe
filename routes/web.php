@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
 
 // Recipes
 Route::resource('recipes', RecipeController::class);
+Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
+Route::get('/recipes/{recipe:slug}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::get('/category/{category:slug}', [RecipeController::class, 'indexByCategory'])->name('recipes.category');
 
 // Favourites
 Route::get('favourites', [FavouriteController::class, 'index'])
