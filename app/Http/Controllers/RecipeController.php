@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\View\View;
 
 class RecipeController extends Controller
@@ -34,6 +35,26 @@ class RecipeController extends Controller
         ]);
 
         return view('recipes.show', compact('recipe'));
+    }
+
+    // Display recipes by tags
+    public function tagIndex(Tag $tag)
+    {
+        $recipes = $tag->recipes()
+            ->with(['category', 'user'])
+            ->latest()
+            ->paginate(12);
+
+        $userFavourites = auth()->check()
+            ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
+            : [];
+
+        return view('recipes.index', [
+            'recipes' => $recipes,
+            'title' => "Recipes with tag: #{$tag->name}",
+            'userFavourites' => $userFavourites,
+            'activeTag' => $tag->slug
+        ]);
     }
 
     // Displays recipes from a specific category (newest first)
