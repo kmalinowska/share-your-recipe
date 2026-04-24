@@ -1,5 +1,6 @@
 <x-app-layout :title="$recipe->title">
-    <div class="md:py-12 bg-base-100">
+    <div class="md:py-12 bg-base-100"
+        style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('{{ asset('storage/images/recipe/recipe-background7.jpg') }}');">
         <div class="max-w-5xl mx-auto">
 
             {{-- 1. HEADER: Title & Meta --}}
@@ -110,41 +111,48 @@
                                 </div>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($recipe->tags as $tag)
-                                        <a href="#" class="badge badge-ghost hover:badge-primary border-none p-3 font-medium lowercase bg-base-100 shadow-sm text-xs transition-transform hover:scale-105">
+                                        <a href="{{ route('recipes.tag', $tag->slug) }}"
+                                           class="badge badge-ghost hover:badge-primary border-none p-3 font-medium lowercase bg-base-100 shadow-sm text-xs transition-transform hover:scale-105">
                                             #{{ $tag->name }}
                                         </a>
                                     @endforeach
                                 </div>
                             </div>
                         @endif
-
-                        <div class="flex justify-center py-4 lg:py-2">
-                            <div class="h-1.5 w-16 bg-primary rounded-full shadow-sm"></div>
-                        </div>
-
                     </div>
 
                     {{-- RIGHT COLUMN: Preparation --}}
-                    <div class="lg:col-span-2 text-left">
-                        <h3 class="text-2xl font-black text-base-content m-0 flex items-center gap-3 h-9">
-                            <x-heroicon-o-fire class="size-7 text-primary" />
-                            Preparation
-                        </h3>
-
-                        <div class="mt-4 text-base-content/80 text-lg leading-relaxed whitespace-pre-line border-l-4 border-primary/10 pl-6 md:pl-8">
-                            {{ $recipe->preparation }}
+                    <div class="lg:col-span-2">
+                        <div class="bg-base-200/90 backdrop-blur-sm rounded-[2rem] p-6 md:p-8 border border-base-200 shadow-sm text-left h-full">
+                            <h3 class="text-2xl font-black text-base-content m-0 flex items-center gap-3 h-9">
+                                <x-heroicon-o-fire class="size-7 text-primary" />
+                                Preparation
+                            </h3>
+                            <div class="mt-6 text-base-content/80 text-lg leading-relaxed whitespace-pre-line border-l-4 border-primary/20 pl-6 md:pl-8">
+                                {{ $recipe->preparation }}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {{-- 4. NAVIGATION FOOTER --}}
-                <div class="mt-12 flex flex-wrap justify-center gap-4 pt-8 border-t border-base-200">
-                    <a href="{{ route('home') }}" class="btn btn-outline rounded-2xl gap-2 px-8">
-                        <x-heroicon-o-home class="size-5" /> Home
-                    </a>
-                    <a href="{{ route('recipes.index') }}" class="btn btn-outline rounded-2xl gap-2 px-8">
-                        <x-heroicon-o-book-open class="size-5" /> All Recipes
-                    </a>
+                <div class="mt-12">
+                    {{-- Linia identyczna jak pod Quick Info --}}
+                    <div class="flex justify-center mb-8">
+                        <div class="h-1.5 w-16 bg-primary rounded-full shadow-sm"></div>
+                    </div>
+
+                    {{-- Przyciski nawigacji --}}
+                    <div class="flex flex-wrap justify-center gap-4 pb-12 md:pb-0">
+                        <a href="{{ route('home') }}" class="btn bg-base-100 hover:bg-base-200 text-base-content border-none rounded-2xl gap-2 px-8 shadow-md">
+                            <x-heroicon-o-home class="size-5 text-primary" />
+                            Home
+                        </a>
+                        <a href="{{ route('recipes.index') }}" class="btn bg-base-100 hover:bg-base-200 text-base-content border-none rounded-2xl gap-2 px-8 shadow-md">
+                            <x-heroicon-o-book-open class="size-5 text-primary" />
+                            All Recipes
+                        </a>
+                    </div>
                 </div>
 
             </div>
