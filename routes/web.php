@@ -31,6 +31,9 @@ Route::get('/category/{category:slug}', [RecipeController::class, 'indexByCatego
 // Favourites
 Route::get('favourites', [FavouriteController::class, 'index'])
     ->middleware('auth')->name('favourites.index');
+Route::post('/recipes/{recipe}/favourite', [FavouriteController::class, 'toggle'])
+    ->middleware('auth')
+    ->name('favourites.toggle');
 
 // Auth routes (login, register, logout)
 require __DIR__.'/auth.php';
