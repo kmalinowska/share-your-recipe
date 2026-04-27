@@ -24,17 +24,29 @@ class RecipeController extends Controller
     // Displays details of a specific recipe
     public function show(Recipe $recipe): View
     {
-        // We load the relations needed for the full recipe view
+        // load the basic relations
         $recipe->load([
             'user',
             'category',
             'ingredients',
             'tags',
-            'comments.user',
-            'comments.replies.user'
+//            'comments.user',
+//            'comments.replies.user'
         ]);
 
-        return view('recipes.show', compact('recipe'));
+        // download main comments as a separate collection with pagination, and load replies as a relation
+        $comments = $recipe->comments()
+            ->whereNull('parent_id')
+            ->with(['user', 'replies.user'])
+            ->latest()
+            ->paginate(10);
+
+        // download favourite IDs
+        $userFavourites = auth()->check()
+            ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
+            : [];
+
+        return view('recipes.show', compact('recipe', 'comments', 'userFavourites'));
     }
 
     // Display recipes by tags
