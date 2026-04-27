@@ -135,6 +135,8 @@
                     </div>
                 </div>
 
+                <x-recipe-comments :comments="$comments" :recipe="$recipe" />
+
                 {{-- 4. NAVIGATION FOOTER --}}
                 <div class="mt-12">
                     {{-- Linia identyczna jak pod Quick Info --}}
