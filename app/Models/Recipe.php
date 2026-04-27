@@ -40,6 +40,26 @@ class Recipe extends Model
         });
     }
 
+    public function scopeSearch($query, $term)
+    {
+        return $query->when($term, function ($q, $term) {
+            $term = Str::lower($term);
+            $q->where(function ($subQuery) use ($term) {
+                $subQuery->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
+                    ->orWhereRaw('LOWER(preparation) LIKE ?', ["%{$term}%"])
+                    ->orWhereHas('category', function ($cat) use ($term) {
+                        $cat->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+                    })
+                    ->orWhereHas('tags', function ($tag) use ($term) {
+                        $tag->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+                    })
+                    ->orWhereHas('ingredients', function ($ing) use ($term) {
+                        $ing->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+                    });
+            });
+        });
+    }
+
     //relations
     //recipe belongs to user
     public function user(): BelongsTo {

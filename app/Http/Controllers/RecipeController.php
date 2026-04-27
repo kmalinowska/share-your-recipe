@@ -6,18 +6,22 @@ use App\Models\Recipe;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class RecipeController extends Controller
 {
     // Displays all recipes (newest first)
-    public function index(): View {
+    public function index(Request $request): View {
         $recipes = Recipe::with(['user', 'category', 'tags'])
+            ->search($request->search)
             ->latest()
-            ->paginate(4);
+            ->paginate(4)
+            ->withQueryString();
 
         return view('recipes.index', [
             'recipes' => $recipes,
-            'userFavourites' => $this->getUserFavourites()
+            'userFavourites' => $this->getUserFavourites(),
+            'title' => $request->search ? "Search results for: {$request->search}" : "All Recipes"
         ]);
     }
 
@@ -36,7 +40,6 @@ class RecipeController extends Controller
 
         // download main comments as a separate collection with pagination, and load replies as a relation
         $comments = $recipe->comments()
-            ->whereNull('parent_id')
             ->with(['user', 'replies.user'])
             ->latest()
             ->paginate(10);
