@@ -40,23 +40,24 @@ class Recipe extends Model
         });
     }
 
-    public function scopeSearch($query, $term)
+    public function scopeSearch($query, array $filters)
     {
-        return $query->when($term, function ($q, $term) {
-            $term = Str::lower($term);
-            $q->where(function ($subQuery) use ($term) {
-                $subQuery->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
-                    ->orWhereRaw('LOWER(preparation) LIKE ?', ["%{$term}%"])
-                    ->orWhereHas('category', function ($cat) use ($term) {
-                        $cat->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
-                    })
-                    ->orWhereHas('tags', function ($tag) use ($term) {
-                        $tag->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
-                    })
-                    ->orWhereHas('ingredients', function ($ing) use ($term) {
-                        $ing->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
-                    });
-            });
+        return $query->where(function ($q) use ($filters) {
+            // 1. Filters by keyword (if expists)
+            if (!empty($filters['search'])) {
+                $term = Str::lower($filters['search']);
+                $q->where(function ($sub) use ($term) {
+                    $sub->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
+                        ->orWhereRaw('LOWER(preparation) LIKE ?', ["%{$term}%"])
+                        ->orWhereHas('ingredients', fn($i) => $i->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]))
+                        ->orWhereHas('tags', fn($t) => $t->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]));
+                });
+            }
+
+            // 2. Filters by category
+            if (!empty($filters['categories'])) {
+                $q->whereIn('category_id', $filters['categories']);
+            }
         });
     }
 
