@@ -12,16 +12,21 @@ class RecipeController extends Controller
 {
     // Displays all recipes (newest first)
     public function index(Request $request): View {
+        $categories = Category::all();
         $recipes = Recipe::with(['user', 'category', 'tags'])
-            ->search($request->search)
+            ->search([
+                'search' => $request->search,
+                'categories' => $request->categories
+            ])
             ->latest()
             ->paginate(4)
             ->withQueryString();
 
         return view('recipes.index', [
             'recipes' => $recipes,
+            'categories' => $categories,
             'userFavourites' => $this->getUserFavourites(),
-            'title' => $request->search ? "Search results for: {$request->search}" : "All Recipes"
+            'selectedCategories' => $request->categories ?? []
         ]);
     }
 
