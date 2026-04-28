@@ -11,11 +11,11 @@
 
                     {{-- Keyword Search --}}
                     <div class="md:col-span-4">
-                        <label class="label font-black text-xs uppercase tracking-widest opacity-60">Search Keyword</label>
+                        <label class="label font-black text-xs uppercase tracking-widest opacity-60 mb-3">Search Keyword</label>
                         <div class="relative">
-                            <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 -translate-y-1/2 size-5 opacity-30" />
+                            <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 size-5 opacity-30" />
                             <input type="text" name="search" value="{{ request('search') }}"
-                                   class="input input-bordered w-full rounded-2xl pl-12 bg-base-100 border-none shadow-sm focus:ring-2 focus:ring-primary"
+                                   class="input input-bordered w-full rounded-2xl pl-4 bg-base-100 border-none shadow-sm focus:ring-2 focus:ring-primary"
                                    placeholder="What are you looking for? (e.g. Pasta, Chicken, Breakfast)">
                         </div>
                     </div>
