@@ -54,9 +54,20 @@
                             @auth
                                 <form action="{{ route('favourites.toggle', $recipe) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-ghost hover:bg-error/10 group rounded-2xl gap-3 px-2">
-                                        <x-heroicon-s-heart class="size-7 {{ in_array($recipe->id, $userFavourites ?? []) ? 'text-error' : 'text-base-content/20' }}" />
-                                        <span class="font-bold text-sm">Favourite</span>
+                                    @php
+                                        $isFav = in_array($recipe->id, $userFavourites ?? []);
+                                    @endphp
+                                    <button type="submit"
+                                            class="btn btn-ghost {{ $isFav ? 'bg-error/5' : 'hover:bg-error/10' }} group rounded-2xl gap-3 px-4">
+                                        {{-- Dynamiczna zmiana ikony: s-heart (solid) vs o-heart (outline) --}}
+                                        @if($isFav)
+                                            <x-heroicon-s-heart class="size-7 text-error" />
+                                        @else
+                                            <x-heroicon-o-heart class="size-7 text-base-content/20 group-hover:text-error/50" />
+                                        @endif
+                                        <span class="font-bold text-sm {{ $isFav ? 'text-error' : '' }}">
+                                            {{ $isFav ? 'Saved' : 'Favourite' }}
+                                        </span>
                                     </button>
                                 </form>
                             @else

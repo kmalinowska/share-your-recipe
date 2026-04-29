@@ -70,8 +70,14 @@
                 @auth
                     <form action="{{ route('favourites.toggle', $recipe) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-ghost btn-circle btn-sm">
-                            <x-heroicon-s-heart class="size-6 {{ in_array($recipe->id, $userFavourites) ? 'text-error' : 'text-base-content/20 hover:text-error/50' }} transition-colors" />
+                        <button type="submit" class="btn btn-ghost btn-circle btn-sm group/heart">
+                            @if(in_array($recipe->id, $userFavourites ?? []))
+                                {{-- Full heart for likesv--}}
+                                <x-heroicon-s-heart class="size-6 text-error transition-transform group-hover/heart:scale-110" />
+                            @else
+                                {{-- Empty heart for unlikes --}}
+                                <x-heroicon-o-heart class="size-6 text-base-content/20 group-hover/heart:text-error/50 transition-colors" />
+                            @endif
                         </button>
                     </form>
                 @else
