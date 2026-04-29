@@ -45,6 +45,7 @@ class RecipeController extends Controller
 
         // download main comments as a separate collection with pagination, and load replies as a relation
         $comments = $recipe->comments()
+            ->whereNull('parent_id')
             ->with(['user', 'replies.user'])
             ->latest()
             ->paginate(10);
