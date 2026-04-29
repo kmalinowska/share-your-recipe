@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\FavouriteController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -32,6 +33,9 @@ Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index'
 Route::get('/recipes/{recipe:slug}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recipes/tags/{tag:slug}', [RecipeController::class, 'tagIndex'])->name('recipes.tag');
 Route::get('/category/{category:slug}', [RecipeController::class, 'indexByCategory'])->name('recipes.category');
+
+// Comments
+Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
 
 // Auth routes (login, register, logout)
 require __DIR__.'/auth.php';

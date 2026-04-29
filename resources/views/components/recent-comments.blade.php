@@ -13,7 +13,7 @@
                     <div class="flex items-center gap-3">
                         <div class="avatar {{ !$comment->user?->avatar ? 'placeholder' : '' }}">
                             <div class="bg-primary/10 text-primary rounded-full w-8 ring-1 ring-primary/10">
-                                @if($comment->user?->avatar_url)
+                                @if($comment->user?->avatar)
                                     {{-- Displays the photo if it exists --}}
                                     <img src="{{ asset('storage/' . $comment->user->avatar) }}" alt="{{ $comment->author_name }}" />
                                 @else
