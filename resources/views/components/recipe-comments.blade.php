@@ -10,12 +10,10 @@
         <span class="badge badge-primary font-bold">{{ $comments->total() }}</span>
     </div>
 
-    {{-- Comment adding form --}}
-    {{-- @include('recipes.partials.comment-form') --}}
-
     <div class="space-y-6 mt-8">
         @forelse($comments as $comment)
-            <div class="bg-base-100/50 p-6 rounded-3xl border border-base-200 shadow-sm transition-all hover:bg-base-100">
+            <div x-data="{ localReply: false }" class="bg-base-100/50 p-6 rounded-3xl border border-base-200 shadow-sm transition-all hover:bg-base-100 text-left">
+                {{-- Comment content (Avatar, Name, Date) --}}
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
                         <div class="avatar {{ !$comment->user?->avatar ? 'placeholder' : '' }}">
@@ -52,11 +50,68 @@
                     {{ $comment->content }}
                 </p>
 
-                {{-- Optional: Reply button --}}
+                {{-- Replies --}}
+                @if($comment->replies->count())
+                    <div class="mt-6 ml-6 md:ml-12 space-y-4 border-l-2 border-primary/10 pl-4">
+                        @foreach($comment->replies as $reply)
+                            <div class="bg-base-100/70 p-4 rounded-2xl border border-base-200 shadow-sm hover:bg-base-100 transition">
+                                <div class="flex items-center gap-2 mb-2 text-xs opacity-70">
+                    <span class="font-bold text-base-content">
+                        {{ $reply->author_name ?? 'Guest User' }}
+                    </span>
+                                    <span class="opacity-40">
+                        {{ $reply->created_at->diffForHumans() }}
+                    </span>
+                                </div>
+
+                                <p class="text-sm text-base-content/80 leading-relaxed">
+                                    {{ $reply->content }}
+                                </p>
+
+                            </div>
+                        @endforeach
+
+                    </div>
+                @endif
+
+                {{-- Reply button --}}
                 <div class="mt-4 flex justify-end">
-                    <button class="btn btn-ghost btn-xs gap-2 text-primary/70 hover:text-primary capitalize">
-                        <x-heroicon-o-arrow-uturn-left class="size-3" /> Reply
+                    <button @click="localReply = !localReply"
+                            class="btn btn-ghost btn-xs gap-2 text-primary/70 hover:text-primary capitalize transition-colors">
+                        <x-heroicon-o-arrow-uturn-left class="size-3" />
+                        <span x-text="localReply ? 'Cancel' : 'Reply'"></span>
                     </button>
+                </div>
+
+                {{-- Reply form--}}
+                <div x-show="localReply"
+                     x-transition
+                     x-cloak
+                     class="mt-4 ml-8 md:ml-16 p-4 bg-base-200/50 rounded-2xl border border-base-300 shadow-inner">
+
+                    <form action="{{ route('comments.store', $recipe) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+
+                        <div class="space-y-3">
+                            @guest
+                                <input type="text" name="guest_name" placeholder="Your Name"
+                                       class="input input-sm input-bordered rounded-xl bg-base-100 w-full max-w-[180px] text-xs" required>
+                            @endguest
+
+                            <div class="relative flex items-center">
+                        <textarea name="content"
+                                  class="textarea textarea-bordered rounded-xl bg-base-100 w-full pr-12 focus:bg-white transition-all h-20 min-h-[5rem] text-sm pt-3"
+                                  placeholder="Write your reply here..." required></textarea>
+
+                                {{-- Submit --}}
+                                <button type="submit"
+                                        class="absolute bottom-2 right-2 btn btn-circle btn-primary btn-sm shadow-md hover:scale-105 transition-transform">
+                                    <x-heroicon-o-paper-airplane class="size-4 rotate-90" />
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         @empty
