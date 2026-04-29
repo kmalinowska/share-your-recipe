@@ -39,8 +39,7 @@ class RecipeController extends Controller
             'category',
             'ingredients',
             'tags',
-//            'comments.user',
-//            'comments.replies.user'
+            'comments.replies.replies'
         ]);
 
         // download main comments as a separate collection with pagination, and load replies as a relation
