@@ -70,4 +70,29 @@
     <div class="mt-10">
         {{ $comments->links() }}
     </div>
+
+    {{-- Create comments --}}
+    <div class="mt-12 bg-base-200/50 p-8 rounded-[2.5rem] border border-base-300">
+        <h3 class="text-xl font-black mb-6">Leave a <span class="text-primary">Comment</span></h3>
+
+        <form action="{{ route('comments.store', $recipe) }}" method="POST" class="space-y-4">
+            @csrf
+            {{-- When user is a guest ask for a name --}}
+            @guest
+                <div class="form-control">
+                    <input type="text" name="guest_name" placeholder="Your Name"
+                           class="input input-bordered rounded-2xl bg-base-100" required>
+                </div>
+            @endguest
+
+            <div class="form-control">
+            <textarea name="content" class="textarea textarea-bordered rounded-[2rem] bg-base-100 h-32"
+                      placeholder="Share your thoughts about this recipe..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary rounded-2xl px-8 shadow-lg shadow-primary/20">
+                Post Comment
+            </button>
+        </form>
+    </div>
 </section>
