@@ -44,7 +44,7 @@ class Comment extends Model
     //comment can have many replies
     public function replies(): HasMany
     {
-        return $this->hasMany(Comment::class, 'parent_id')->orderBy('id');
+        return $this->hasMany(Comment::class, 'parent_id')->latest();
     }
 
     //comment belongs to parent

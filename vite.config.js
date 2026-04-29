@@ -11,10 +11,14 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        host: '0.0.0.0', // Wymusza nasłuchiwanie na wszystkich IP
+        host: true,
         port: 5173,      // Jawne określenie portu
         origin: 'http://192.168.0.3:5173',
         strictPort: true,
+        cors:true,
+        hmr: {
+            host: '192.168.0.3',
+        },
 
         watch: {
             ignored: ['**/storage/framework/views/**'],
