@@ -92,4 +92,10 @@ class Recipe extends Model
     {
         return $this->hasMany(Comment::class)->whereNull('parent_id');
     }
+
+    //recipe has many comments (with replies)
+    public function allComments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
