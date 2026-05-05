@@ -146,7 +146,11 @@
                     </div>
                 </div>
 
-                <x-recipe-comments :comments="$comments" :recipe="$recipe" />
+                <x-recipe-comments :comments="$comments"
+                                   :recipe="$recipe"
+                                   :total-comments-count="$totalCommentsCount"
+                                   :thread-count="$threadCount"
+                />
 
                 {{-- 4. NAVIGATION FOOTER --}}
                 <div class="mt-12">
