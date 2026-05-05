@@ -58,4 +58,12 @@ class Comment extends Model
     {
         return $this->user?->name ?? $this->guest_name ?? 'Anonim';
     }
+
+    // Returns the root comment ID for flat threading.
+    // If this comment is already a reply, return its parent_id.
+    // This ensures all replies stay at depth = 1.
+    public function getThreadRootIdAttribute(): string
+    {
+        return $this->parent_id ?? $this->id;
+    }
 }

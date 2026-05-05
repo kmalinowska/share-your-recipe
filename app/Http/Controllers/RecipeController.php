@@ -38,14 +38,15 @@ class RecipeController extends Controller
             'user',
             'category',
             'ingredients',
-            'tags',
-            'comments.replies.replies'
+            'tags'
         ]);
 
-        // download main comments as a separate collection with pagination, and load replies as a relation
+        // Load only root comments (parent_id = null) with their direct replies.
+        // Flat threading: replies are always at depth = 1, never deeper.
+        // We only need one level of replies.user because there is no deeper nesting
         $comments = $recipe->comments()
             ->whereNull('parent_id')
-            ->with(['user', 'replies.user'])
+            ->with(['user', 'replies.user']) // one level of replies is enough — flat threading
             ->latest()
             ->paginate(10);
 
@@ -58,7 +59,7 @@ class RecipeController extends Controller
     }
 
     // Display recipes by tags
-    public function tagIndex(Tag $tag)
+    public function tagIndex(Tag $tag): View
     {
         $recipes = $tag->recipes()
             ->with(['category', 'user'])
@@ -72,7 +73,7 @@ class RecipeController extends Controller
         return view('recipes.index', [
             'recipes' => $recipes,
             'title' => "Recipes with tag: #{$tag->name}",
-            'userFavourites' => $userFavourites,
+            'userFavourites' => $this->getUserFavourites(),
             'activeTag' => $tag->slug
         ]);
     }
