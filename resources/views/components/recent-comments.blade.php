@@ -19,8 +19,8 @@
                                 @else
                                     {{-- Displays initial if no photo or guest --}}
                                     <span class="text-xs font-bold uppercase">
-                {{ substr($comment->author_name ?? 'G', 0, 1) }}
-            </span>
+                                        {{ substr($comment->author_name ?? 'G', 0, 1) }}
+                                    </span>
                                 @endif
                             </div>
                         </div>
