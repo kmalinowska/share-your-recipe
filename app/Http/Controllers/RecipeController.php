@@ -50,12 +50,15 @@ class RecipeController extends Controller
             ->latest()
             ->paginate(10);
 
+        $totalCommentsCount = $recipe->allComments()->count();
+        $threadCount        = $recipe->comments()->count();
+
         // download favourite IDs
         $userFavourites = auth()->check()
             ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
             : [];
 
-        return view('recipes.show', compact('recipe', 'comments', 'userFavourites'));
+        return view('recipes.show', compact('recipe', 'comments', 'totalCommentsCount', 'threadCount', 'userFavourites'));
     }
 
     // Display recipes by tags

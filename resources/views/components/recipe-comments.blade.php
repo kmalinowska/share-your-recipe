@@ -1,4 +1,4 @@
-@props(['comments', 'recipe'])
+@props(['comments', 'recipe', 'totalCommentsCount', 'threadCount'])
 
 <section class="mt-16 bg-base-200/90 backdrop-blur-sm rounded-[2rem] p-6 md:p-10 border border-base-200 shadow-sm">
     {{-- Header --}}
@@ -7,7 +7,19 @@
             <x-heroicon-o-chat-bubble-left-right class="size-7 text-primary" />
             Comments
         </h3>
-        <span class="badge badge-primary font-bold">{{ $comments->total() }}</span>
+        <div class="flex items-center gap-2">
+            {{-- Łączna liczba --}}
+            <span class="badge badge-primary font-bold">
+        {{ $totalCommentsCount }}
+    </span>
+
+            {{-- Liczba wątków — tylko gdy są odpowiedzi --}}
+            @if($totalCommentsCount > $threadCount)
+                <span class="text-xs text-base-content/50 font-medium">
+            ({{ $threadCount }} {{ Str::plural('thread', $threadCount) }})
+        </span>
+            @endif
+        </div>
     </div>
 
     <div class="space-y-6 mt-8">
