@@ -54,9 +54,8 @@
             <li>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-left w-full">
-                        <x-heroicon-o-arrow-left-start-on-rectangle class="size-6"/>
-                        Logout
+                    <button type="submit" class="flex items-center gap-2 text-left w-full">
+                        <x-heroicon-o-arrow-left-start-on-rectangle class="size-6"/> Logout
                     </button>
                 </form>
             </li>
