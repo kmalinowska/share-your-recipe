@@ -3,9 +3,13 @@
 use App\Models\Comment;
 use App\Models\Recipe;
 use App\Models\User;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+beforeEach(function(){
+   $this->seed(CategorySeeder::class);
+});
 
 // ---- STORE ----
 // ensure authenticated users can post comments
