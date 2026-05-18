@@ -127,4 +127,44 @@ it('passes user favourites IDs to the view', function () {
     });
 });
 
-// ------- TOOGLE --------
+// ---- TOGGLE (Click on heart) ----
+
+it('adds a recipe to favourites if not already there', function () {
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->actingAs($user)->post(route('favourites.toggle', $recipe));
+
+    $response->assertStatus(302);
+    $this->assertDatabaseHas('favourites', [
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+    $response->assertSessionHas('success', 'Added to favourites!');
+});
+
+it('removes a recipe from favourites if it is already there', function () {
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create();
+
+    Favourite::factory()->create([
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+
+    $response = $this->actingAs($user)->post(route('favourites.toggle', $recipe));
+
+    $this->assertDatabaseMissing('favourites', [
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+    $response->assertSessionHas('success', 'Removed from favourites.');
+});
+
+it('prevents guests from toggling favourites', function () {
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->post(route('favourites.toggle', $recipe));
+
+    $response->assertRedirect(route('login'));
+});
