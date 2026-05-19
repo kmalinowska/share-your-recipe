@@ -7,7 +7,6 @@ use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
-uses(RefreshDatabase::class);
 beforeEach(function(){
     $this->seed(CategorySeeder::class);
 });
@@ -166,6 +165,32 @@ it('removes a recipe from favourites if it is already there', function () {
     $response->assertSessionHas('success', 'Removed from favourites.');
 });
 
+// verifies that the favourites toggle correctly adds and removes a recipe
+it('toggles a recipe in favourites', function() {
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create();
+
+    // Action 1. Add recipe to favourites
+    $response = $this->actingAs($user)
+        ->post(route('favourites.toggle', $recipe));
+    $response->assertSessionHas('success', 'Added to favourites!');
+
+    $this->assertDatabaseHas('favourites', [
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+
+    // Action 2. Remove recipe from favourites (toggle)
+    $response = $this->actingAs($user)
+        ->post(route('favourites.toggle', $recipe));
+    $response->assertSessionHas('success', 'Removed from favourites.');
+
+    $this->assertDatabaseMissing('favourites', [
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+});
+
 // ensures unauthenticated users are redirected to login
 it('prevents guests from toggling favourites', function () {
     $recipe = Recipe::factory()->create();
@@ -173,4 +198,28 @@ it('prevents guests from toggling favourites', function () {
     $response = $this->post(route('favourites.toggle', $recipe));
 
     $response->assertRedirect(route('login'));
+});
+
+// verifies that users can only see their own favourite recipes
+it('shows only user favourite recipes on the index page', function() {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    $favouriteRecipe = Recipe::factory()->create(['title' => 'My favourite']);
+    $otherRecipe = Recipe::factory()->create(['title' => 'Other Recipe']);
+
+    Favourite::factory()->create([
+       'user_id' => $user->id,
+       'recipe_id' => $favouriteRecipe->id
+    ]);
+
+    Favourite::factory()->create([
+        'user_id' => $otherUser->id,
+        'recipe_id' => $otherRecipe->id
+    ]);
+
+    $response = $this->actingAs($user)->get(route('favourites.index'));
+    $response->assertStatus(200);
+    $response->assertSee('My favourite');
+    $response->assertDontSee('Other Recipe');
 });
