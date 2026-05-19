@@ -128,7 +128,7 @@ it('passes user favourites IDs to the view', function () {
 });
 
 // ---- TOGGLE (Click on heart) ----
-
+// ensures a favourite record is created for authenticated users
 it('adds a recipe to favourites if not already there', function () {
     $user = User::factory()->create();
     $recipe = Recipe::factory()->create();
@@ -147,6 +147,7 @@ it('adds a recipe to favourites if not already there', function () {
     $response->assertSessionHas('success', 'Added to favourites!');
 });
 
+// ensures an existing favourite record is deleted when toggled again
 it('removes a recipe from favourites if it is already there', function () {
     $user = User::factory()->create();
     $recipe = Recipe::factory()->create();
@@ -165,6 +166,7 @@ it('removes a recipe from favourites if it is already there', function () {
     $response->assertSessionHas('success', 'Removed from favourites.');
 });
 
+// ensures unauthenticated users are redirected to login
 it('prevents guests from toggling favourites', function () {
     $recipe = Recipe::factory()->create();
 
