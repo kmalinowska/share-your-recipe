@@ -140,6 +140,10 @@ it('adds a recipe to favourites if not already there', function () {
         'user_id' => $user->id,
         'recipe_id' => $recipe->id
     ]);
+
+    // ensures only one favourite record exists
+    $this->assertDatabaseCount('favourites', 1);
+
     $response->assertSessionHas('success', 'Added to favourites!');
 });
 
