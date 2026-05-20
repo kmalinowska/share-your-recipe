@@ -146,3 +146,28 @@ it('shows empty state message when no recipes match search criteria', function (
     $response->assertDontSee('Chocolate Brownie');
     $response->assertStatus(200);
 });
+
+// PAGINATION
+// verifies that recipe pagination limits results to 4 items per page
+it('paginates recipes with exactly 4 items per page', function () {
+    Recipe::factory(6)->create();
+
+    $response = $this->get(route('recipes.index'));
+
+    expect($response->viewData('recipes')->count())->toBe(4);
+});
+
+// verifies that recipes are ordered from newest to oldest
+it('orders recipes correctly from latest to oldest', function () {
+    $oldRecipe = Recipe::factory()->create(['title' => 'Old Recipe', 'created_at' => now()->subDays(2)]);
+    $newRecipe = Recipe::factory()->create(['title' => 'New Recipe', 'created_at' => now()]);
+
+    $response = $this->get(route('recipes.index'));
+
+    // 1. Carefully examine the Eloquent collection
+    $recipes = $response->viewData('recipes');
+    expect($recipes->first()->id)->toBe($newRecipe->id);
+
+    // 2. Check whether the user sees them in the correct order on the screen
+    $response->assertSeeInOrder(['New Recipe', 'Old Recipe']);
+});
