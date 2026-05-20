@@ -157,6 +157,7 @@ it('paginates recipes with exactly 4 items per page', function () {
     expect($response->viewData('recipes')->count())->toBe(4);
 });
 
+// SORTING
 // verifies that recipes are ordered from newest to oldest
 it('orders recipes correctly from latest to oldest', function () {
     $oldRecipe = Recipe::factory()->create(['title' => 'Old Recipe', 'created_at' => now()->subDays(2)]);
@@ -170,4 +171,41 @@ it('orders recipes correctly from latest to oldest', function () {
 
     // 2. Check whether the user sees them in the correct order on the screen
     $response->assertSeeInOrder(['New Recipe', 'Old Recipe']);
+});
+
+// USER FAVOURITES
+// verifies that favourite recipe IDs are passed to the view for authenticated users
+it('passes user favourites array for logged in user', function () {
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create();
+    // add user to favourites
+    $user->favourites()->create(['recipe_id' => $recipe->id]);
+
+    $response = $this->actingAs($user)->get(route('recipes.index'));
+
+    $response->assertViewHas('userFavourites', function ($favourites) use ($recipe) {
+        return in_array($recipe->id, $favourites);
+    });
+});
+
+// GUEST FAVOURITES
+// verifies that guests receive an empty favourites array
+it('passes empty user favourites array for guests', function () {
+    Recipe::factory()->create();
+
+    $response = $this->get(route('recipes.index'));
+
+    $response->assertViewHas('userFavourites', []);
+});
+
+// SELECTED CATEGORIES
+// verifies that selected category filters are preserved in the view
+it('passes selected categories back to view to retain checkbox states', function () {
+    $category = Category::first();
+
+    $response = $this->get(route('recipes.index', ['categories' => [$category->id]]));
+
+    $response->assertViewHas('selectedCategories', function ($selected) use ($category) {
+        return in_array($category->id, $selected);
+    });
 });
