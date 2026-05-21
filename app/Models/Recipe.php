@@ -43,7 +43,7 @@ class Recipe extends Model
     public function scopeSearch($query, array $filters)
     {
         return $query->where(function ($q) use ($filters) {
-            // 1. Filters by keyword (if expists)
+            // 1. Filters by keyword (if exists)
             if (!empty($filters['search'])) {
                 $term = Str::lower($filters['search']);
                 $q->where(function ($sub) use ($term) {
