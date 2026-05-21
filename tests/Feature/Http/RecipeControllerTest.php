@@ -5,6 +5,8 @@ use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Ingredient;
+use App\Models\Comment;
+use App\Models\Favourite;
 use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -13,7 +15,9 @@ beforeEach(function(){
     $this->seed(CategorySeeder::class);
 });
 
-// ---- INDEX & SEARCHING (List of recipes) ----
+// ==========================================
+// 1. INDEX METHOD & SEARCHING
+// ==========================================
 
 // INDEX
 // verifies that the recipes index page loads successfully
@@ -114,7 +118,7 @@ it('filters recipes by search keyword in ingredients', function () {
     $response->assertDontSee('Tomato Soup');
 });
 
-// CATEGORY FILTER
+// SEARCH: CATEGORY FILTER
 // verifies that recipes can be filtered by selected category
 it('filters recipes by single category selection', function () {
     // download categories from the seeder
@@ -136,7 +140,43 @@ it('filters recipes by single category selection', function () {
     $response->assertDontSee('Category B Dish');
 });
 
-// EMPTY STATE
+// SEARCH: keyword & category
+// verifies that keyword search and category filters work together correctly
+it('filters recipes by keyword and category together', function () {
+
+    $dessert = Category::first();
+    $soup = Category::skip(1)->first();
+
+    // SHOULD MATCH
+    $matchingRecipe = Recipe::factory()->create([
+        'title' => 'Chocolate Cake',
+        'category_id' => $dessert->id,
+    ]);
+
+    // WRONG CATEGORY
+    Recipe::factory()->create([
+        'title' => 'Chocolate Soup',
+        'category_id' => $soup->id,
+    ]);
+
+    // WRONG TITLE
+    Recipe::factory()->create([
+        'title' => 'Vanilla Cake',
+        'category_id' => $dessert->id,
+    ]);
+
+    $response = $this->get(route('recipes.index', [
+        'search' => 'Chocolate',
+        'categories' => [$dessert->id],
+    ]));
+
+    $response->assertSee('Chocolate Cake');
+
+    $response->assertDontSee('Chocolate Soup');
+    $response->assertDontSee('Vanilla Cake');
+});
+
+// SEARCH: EMPTY STATE
 // verifies that no recipes are shown when search results are empty
 it('shows empty state message when no recipes match search criteria', function () {
     Recipe::factory()->create(['title' => 'Chocolate Brownie']);
@@ -209,3 +249,8 @@ it('passes selected categories back to view to retain checkbox states', function
         return in_array($category->id, $selected);
     });
 });
+
+
+// ==========================================
+// 2. SHOW METHOD
+// ==========================================
