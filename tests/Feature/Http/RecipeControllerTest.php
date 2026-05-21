@@ -254,3 +254,228 @@ it('passes selected categories back to view to retain checkbox states', function
 // ==========================================
 // 2. SHOW METHOD
 // ==========================================
+
+// BASIC LOADING AND STATUS
+// verifies that the recipe show page loads successfully
+it('displays recipe show page successfully', function () {
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertStatus(200);
+    $response->assertViewIs('recipes.show');
+});
+
+// verifies that a non-existent recipe returns a 404 response
+it('returns 404 for non-existent recipe slug', function() {
+    $response = $this->get('/recipes/non-existent-slug');
+    $response->assertStatus(404);
+});
+
+// verifies that the recipe model is passed correctly to the show view
+it('passes recipe data to the show view', function () {
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertViewHas('recipe', $recipe);
+});
+
+// RECIPE MODEL RELATIONS ($recipe->load)
+// verifies that all required recipe relations are eager loaded
+it('loads recipe relations on show page', function () {
+    $existingCategory = Category::first();
+
+    $recipe = Recipe::factory()
+        ->hasAttached(
+            Ingredient::factory()->count(2),
+            ['quantity' => '100', 'unit' => 'g'],
+            'ingredients'
+        )
+        ->hasTags(2)
+        ->for(User::factory())
+        ->for($existingCategory)
+        ->create();
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $loadedRecipe = $response->viewData('recipe');
+
+    expect($loadedRecipe->relationLoaded('user'))->toBeTrue()
+        ->and($loadedRecipe->relationLoaded('category'))->toBeTrue()
+        ->and($loadedRecipe->relationLoaded('ingredients'))->toBeTrue()
+        ->and($loadedRecipe->relationLoaded('tags'))->toBeTrue();
+});
+
+// verifies that recipe relations contain correct related data
+it('passes accurate recipe data with relations to show view', function () {
+    $recipe = Recipe::factory()->create();
+    $ingredient = Ingredient::factory()->create(['name' => 'Salt']);
+    $recipe->ingredients()->attach($ingredient->id, ['quantity' => '1', 'unit' => 'pinch']);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $recipeInView = $response->viewData('recipe');
+
+    expect($recipeInView->id)->toBe($recipe->id)
+        ->and($recipeInView->ingredients->first()->name)->toBe('Salt');
+});
+
+// COMMENT COLLECTION AND PAGINATION ($comments)
+// verifies that recipe comments are displayed on the show page
+it('shows comments on recipe page', function () {
+    $recipe  = Recipe::factory()->create();
+
+    Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'content' => 'Amazing recipe!',
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertSee('Amazing recipe!');
+});
+
+// verifies that only root comments are included in the paginated comments collection
+it('shows only root comments in comments collection', function () {
+    $recipe = Recipe::factory()->create();
+
+    $root = Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'parent_id' => null,
+    ]);
+
+    $reply = Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'parent_id' => $root->id,
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $comments = $response->viewData('comments');
+
+    expect($comments->contains($root))->toBeTrue()
+        ->and($comments->contains($reply))->toBeFalse();
+});
+
+// verifies that replies relation is eager loaded for root comments
+it('loads replies relation for comments', function () {
+    $recipe = Recipe::factory()->create();
+
+    $root = Comment::factory()->create([
+        'recipe_id' => $recipe->id
+    ]);
+
+    Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'parent_id' => $root->id
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $comment = $response->viewData('comments')->first();
+
+    expect($comment->relationLoaded('replies'))->toBeTrue();
+});
+
+// verifies that comments are ordered from newest to oldest
+it('orders comments from newest to oldest', function () {
+    $recipe = Recipe::factory()->create();
+
+    Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'content' => 'Old',
+        'created_at' => now()->subDay()
+    ]);
+
+    Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'content' => 'New',
+        'created_at' => now()
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertSeeInOrder(['New', 'Old']);
+});
+
+// verifies that comments pagination is limited to 10 items per page
+it('paginates comments with 10 items per page', function () {
+    $recipe = Recipe::factory()->create();
+
+    Comment::factory(12)->create([
+        'recipe_id' => $recipe->id,
+        'parent_id' => null,
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $comments = $response->viewData('comments');
+
+    expect($comments->count())->toBe(10);
+});
+
+// COMMENT STATISTICS ($totalCommentsCount and $threadCount)
+// verifies that total comments count includes both root comments and replies
+it('passes total comments count including replies', function () {
+    $recipe = Recipe::factory()->create();
+
+    $root = Comment::factory()->create([
+        'recipe_id' => $recipe->id
+    ]);
+
+    Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'parent_id' => $root->id
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertViewHas('totalCommentsCount', 2);
+});
+
+// verifies that thread count includes only root comments
+it('passes thread count with only root comments', function () {
+    $recipe = Recipe::factory()->create();
+
+    $root = Comment::factory()->create([
+        'recipe_id' => $recipe->id
+    ]);
+
+    Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'parent_id' => $root->id
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertViewHas('threadCount', 1);
+});
+
+// FAVOURITES ($userFavourites)
+// verifies that authenticated users receive their favourite recipe IDs
+it('passes user favourites ids for authenticated user', function () {
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create();
+
+    Favourite::factory()->create([
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+
+    $response = $this->actingAs($user)
+        ->get(route('recipes.show', $recipe));
+
+    $response->assertViewHas('userFavourites', function ($favourites) use ($recipe) {
+        return in_array($recipe->id, $favourites);
+    });
+});
+
+// verifies that guests receive an empty favourites array
+it('passes empty favourites array for guests', function () {
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertViewHas('userFavourites', []);
+});
