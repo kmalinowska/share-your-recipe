@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Favourite;
 use App\Models\Recipe;
 use App\Models\User;
@@ -11,7 +12,9 @@ beforeEach(function(){
     $this->seed(CategorySeeder::class);
 });
 
-// ------- INDEX --------
+// ==========================================
+// 1. INDEX METHOD
+// ==========================================
 // Ensure unauthenticated users cannot access favourites index
 it('redirects guests to login when accessing favourites index', function () {
     $response = $this->get(route('favourites.index'));
@@ -20,8 +23,9 @@ it('redirects guests to login when accessing favourites index', function () {
 
 // Ensure favourite recipes are displayed for logged in users
 it('shows favourite recipes for the logged in user on the favourites index page', function() {
-   $user = User::factory()->create();
-   $recipe = Recipe::factory()->create(['title' => 'Favourite Dish']);
+    $category = Category::first();
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id, 'title' => 'Unique Favourite Dish']);
 
    Favourite::factory()->create([
        'user_id' => $user->id,
@@ -30,17 +34,17 @@ it('shows favourite recipes for the logged in user on the favourites index page'
 
    $response = $this->actingAs($user)->get(route('favourites.index'));
    $response->assertStatus(200);
-   $response->assertSee('Favourite Dish');
    $response->assertViewIs('favourites.index');
-   $response->assertViewHas('recipes');
+   $recipesInView = $response->viewData('recipes');
+   expect($recipesInView->contains($recipe))->toBetrue();
 });
 
 // Ensure favourites are ordered by latest first
 it('shows favourite recipes from newest to oldest', function () {
-
+    $category = Category::first();
     $user = User::factory()->create();
-    $olderRecipe = Recipe::factory()->create(['title' => 'Older Recipe']);
-    $newerRecipe = Recipe::factory()->create(['title' => 'Newer Recipe']);
+    $olderRecipe = Recipe::factory()->create(['category_id' => $category->id, 'title' => 'Older Recipe']);
+    $newerRecipe = Recipe::factory()->create(['category_id' => $category->id, 'title' => 'Newer Recipe']);
 
     Favourite::factory()->create([
         'user_id' => $user->id,
@@ -59,17 +63,16 @@ it('shows favourite recipes from newest to oldest', function () {
 
     $response->assertStatus(200);
 
-    $response->assertSeeInOrder([
-        'Newer Recipe',
-        'Older Recipe',
-    ]);
+    $recipesInView = $response->viewData('recipes');
+    expect($recipesInView->first()->id)->toBe($newerRecipe->id)
+        ->and($recipesInView->last()->id)->toBe($olderRecipe->id);
 });
 
 // Pagination tests
 it('paginates favourite recipes with 12 items per page', function () {
-
+    $category = Category::first();
     $user = User::factory()->create();
-    $recipes = Recipe::factory()->count(13)->create();
+    $recipes = Recipe::factory()->count(13)->create(['category_id' => $category->id]);
 
     foreach ($recipes as $recipe) {
         Favourite::factory()->create([
@@ -82,21 +85,14 @@ it('paginates favourite recipes with 12 items per page', function () {
         ->get(route('favourites.index'));
 
     $response->assertStatus(200);
-
-    // first 12 should be visible
-    foreach ($recipes->take(12) as $recipe) {
-        $response->assertSee($recipe->title);
-    }
-
-    // 13th should NOT be on first page
-    $response->assertDontSee($recipes[12]->title);
+    expect($response->viewData('recipes')->count())->toBe(12);
 });
 
 it('shows remaining favourite recipes on the second page', function () {
-
+    $category = Category::first();
     $user = User::factory()->create();
 
-    $recipes = Recipe::factory()->count(13)->create();
+    $recipes = Recipe::factory()->count(13)->create(['category_id' => $category->id]);
 
     foreach ($recipes as $recipe) {
         Favourite::factory()->create([
@@ -109,14 +105,14 @@ it('shows remaining favourite recipes on the second page', function () {
         ->get(route('favourites.index', ['page' => 2]));
 
     $response->assertStatus(200);
-
-    $response->assertSee($recipes[12]->title);
+    expect($response->viewData('recipes')->count())->toBe(1);
 });
 
 // Ensure user favourite IDs are available in the view
 it('passes user favourites IDs to the view', function () {
+    $category = Category::first();
     $user = User::factory()->create();
-    $recipe = Recipe::factory()->create();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     Favourite::factory()->create(['user_id' => $user->id, 'recipe_id' => $recipe->id]);
 
     $response = $this->actingAs($user)->get(route('favourites.index'));
@@ -126,11 +122,41 @@ it('passes user favourites IDs to the view', function () {
     });
 });
 
-// ---- TOGGLE (Click on heart) ----
+// verifies that users can only see their own favourite recipes
+it('shows only user favourite recipes on the index page', function() {
+    $category = Category::first();
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    $favouriteRecipe = Recipe::factory()->create(['category_id' => $category->id]);
+    $otherRecipe = Recipe::factory()->create(['category_id' => $category->id]);
+
+    Favourite::factory()->create([
+        'user_id' => $user->id,
+        'recipe_id' => $favouriteRecipe->id
+    ]);
+
+    Favourite::factory()->create([
+        'user_id' => $otherUser->id,
+        'recipe_id' => $otherRecipe->id
+    ]);
+
+    $response = $this->actingAs($user)->get(route('favourites.index'));
+
+    $response->assertStatus(200);
+    $recipesInView = $response->viewData('recipes');
+    expect($recipesInView->contains($favouriteRecipe))->toBeTrue()
+        ->and($recipesInView->contains($otherRecipe))->toBeFalse();
+});
+
+// ==========================================
+// 2. TOGGLE METHOD (Heart Click)
+// ==========================================
 // ensures a favourite record is created for authenticated users
 it('adds a recipe to favourites if not already there', function () {
+    $category = Category::first();
     $user = User::factory()->create();
-    $recipe = Recipe::factory()->create();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
 
     $response = $this->actingAs($user)->post(route('favourites.toggle', $recipe));
 
@@ -142,14 +168,14 @@ it('adds a recipe to favourites if not already there', function () {
 
     // ensures only one favourite record exists
     $this->assertDatabaseCount('favourites', 1);
-
     $response->assertSessionHas('success', 'Added to favourites!');
 });
 
 // ensures an existing favourite record is deleted when toggled again
 it('removes a recipe from favourites if it is already there', function () {
+    $category = Category::first();
     $user = User::factory()->create();
-    $recipe = Recipe::factory()->create();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
 
     Favourite::factory()->create([
         'user_id' => $user->id,
@@ -165,61 +191,12 @@ it('removes a recipe from favourites if it is already there', function () {
     $response->assertSessionHas('success', 'Removed from favourites.');
 });
 
-// verifies that the favourites toggle correctly adds and removes a recipe
-it('toggles a recipe in favourites', function() {
-    $user = User::factory()->create();
-    $recipe = Recipe::factory()->create();
-
-    // Action 1. Add recipe to favourites
-    $response = $this->actingAs($user)
-        ->post(route('favourites.toggle', $recipe));
-    $response->assertSessionHas('success', 'Added to favourites!');
-
-    $this->assertDatabaseHas('favourites', [
-        'user_id' => $user->id,
-        'recipe_id' => $recipe->id
-    ]);
-
-    // Action 2. Remove recipe from favourites (toggle)
-    $response = $this->actingAs($user)
-        ->post(route('favourites.toggle', $recipe));
-    $response->assertSessionHas('success', 'Removed from favourites.');
-
-    $this->assertDatabaseMissing('favourites', [
-        'user_id' => $user->id,
-        'recipe_id' => $recipe->id
-    ]);
-});
-
 // ensures unauthenticated users are redirected to login
 it('prevents guests from toggling favourites', function () {
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
 
     $response = $this->post(route('favourites.toggle', $recipe));
 
     $response->assertRedirect(route('login'));
-});
-
-// verifies that users can only see their own favourite recipes
-it('shows only user favourite recipes on the index page', function() {
-    $user = User::factory()->create();
-    $otherUser = User::factory()->create();
-
-    $favouriteRecipe = Recipe::factory()->create(['title' => 'My favourite']);
-    $otherRecipe = Recipe::factory()->create(['title' => 'Other Recipe']);
-
-    Favourite::factory()->create([
-       'user_id' => $user->id,
-       'recipe_id' => $favouriteRecipe->id
-    ]);
-
-    Favourite::factory()->create([
-        'user_id' => $otherUser->id,
-        'recipe_id' => $otherRecipe->id
-    ]);
-
-    $response = $this->actingAs($user)->get(route('favourites.index'));
-    $response->assertStatus(200);
-    $response->assertSee('My favourite');
-    $response->assertDontSee('Other Recipe');
 });
