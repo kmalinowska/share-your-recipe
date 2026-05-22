@@ -281,6 +281,19 @@ it('passes recipe data to the show view', function () {
     $response->assertViewHas('recipe', $recipe);
 });
 
+// Verifies that Route Model Binding (`{recipe:slug}`) works properly with raw URL strings
+it('resolves the recipe correctly when hitting the raw slug URL directly', function () {
+    $recipe = Recipe::factory()->create([
+        'title' => 'Delicious Casserole',
+        'slug' => 'delicious-casserole'
+    ]);
+
+    $response = $this->get('/recipes/delicious-casserole');
+
+    $response->assertStatus(200);
+    expect($response->viewData('recipe')->id)->toBe($recipe->id);
+});
+
 // RECIPE MODEL RELATIONS ($recipe->load)
 // verifies that all required recipe relations are eager loaded
 it('loads recipe relations on show page', function () {
