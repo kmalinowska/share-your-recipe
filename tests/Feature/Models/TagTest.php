@@ -1,10 +1,16 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Tag;
 use App\Models\Recipe;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\QueryException;
 
 uses(RefreshDatabase::class);
+beforeEach(function(){
+    $this->seed(CategorySeeder::class);
+});
 
 it('creates a tag using factory with valid uuid', function () {
     $tag = Tag::factory()->create();
@@ -23,8 +29,9 @@ it('automatically generates uuid and slug from name on creation', function(){
 });
 
 it('can be associated with multiple recipes', function() {
+    $category = Category::first();
     $tag = Tag::factory()->create(['name' => 'Spicy']);
-    $recipes = Recipe::factory()->count(3)->create();
+    $recipes = Recipe::factory()->count(3)->create(['category_id' => $category->id]);
 
     // combine the tag with 3 recipes
     $tag->recipes()->attach($recipes->pluck('id'));
@@ -35,11 +42,12 @@ it('can be associated with multiple recipes', function() {
 
 it('can be assigned to multiple recipes and vice versa', function () {
     // 1. Preparation: 2 tags and 2 recipes
+    $category = Category::first();
     $tag1 = Tag::factory()->create(['name' => 'Vege']);
     $tag2 = Tag::factory()->create(['name' => 'FastFood']);
 
-    $recipe1 = Recipe::factory()->create();
-    $recipe2 = Recipe::factory()->create();
+    $recipe1 = Recipe::factory()->create(['category_id' => $category->id]);
+    $recipe2 = Recipe::factory()->create(['category_id' => $category->id]);
 
     // 2. Action: attach
     $recipe1->tags()->attach([$tag1->id, $tag2->id]);
@@ -52,7 +60,8 @@ it('can be assigned to multiple recipes and vice versa', function () {
 });
 
 it('detaches tags from recipe correctly', function () {
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     $tag = Tag::factory()->create();
 
     $recipe->tags()->attach($tag->id);
@@ -81,7 +90,8 @@ it('prevents creating tags with duplicate names', function () {
 //cascade delete test - check whether, when a recipe is deleted, the records linking it to tags in the recipe_tag table also disappear
 it('automatically removes pivot records when a recipe is deleted', function () {
     // 1. Preparation: Recipe linked to tag
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     $tag = Tag::factory()->create();
     $recipe->tags()->attach($tag->id);
 

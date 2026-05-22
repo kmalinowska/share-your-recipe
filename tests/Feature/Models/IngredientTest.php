@@ -1,11 +1,16 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Recipe;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Database\QueryException;
 
 uses(RefreshDatabase::class);
+beforeEach(function(){
+    $this->seed(CategorySeeder::class);
+});
 
 /**
  * Model Logic Tests
@@ -61,7 +66,8 @@ it('prevents creating ingredients with duplicate names', function () {
 
 it('saves quantity and unit in the pivot table correctly', function () {
     // 1. Preparation
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     $ingredient = Ingredient::factory()->create(['name' => 'Wheat Flour']);
 
     // 2. Action: Attach ingredient with pivot data
@@ -85,7 +91,8 @@ it('saves quantity and unit in the pivot table correctly', function () {
 });
 
 it('prevents adding the same ingredient to a recipe twice', function () {
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     $ingredient = Ingredient::factory()->create();
 
     $recipe->ingredients()->attach($ingredient->id, ['quantity' => '10']);
@@ -101,7 +108,8 @@ it('prevents adding the same ingredient to a recipe twice', function () {
  */
 
 it('protects ingredient from deletion if used in a recipe', function () {
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     $ingredient = Ingredient::factory()->create();
     $recipe->ingredients()->attach($ingredient->id, ['quantity' => '1']);
 
@@ -110,7 +118,8 @@ it('protects ingredient from deletion if used in a recipe', function () {
 });
 
 it('removes pivot records when a recipe is deleted but keeps the ingredient', function () {
-    $recipe = Recipe::factory()->create();
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
     $ingredient = Ingredient::factory()->create();
     $recipe->ingredients()->attach($ingredient->id, ['quantity' => '5']);
 

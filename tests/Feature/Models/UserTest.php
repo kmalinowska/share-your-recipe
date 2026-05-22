@@ -1,11 +1,16 @@
 <?php
 
+use App\Models\Category;
 use App\Models\User;
 use App\Models\Recipe;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
+beforeEach(function(){
+    $this->seed(CategorySeeder::class);
+});
 
 /**
  * Model Logic & Security
@@ -57,14 +62,26 @@ it('correctly identifies admin and regular users', function () {
  */
 
 it('can have multiple recipes associated with it', function () {
+    $category = Category::first();
     $user = User::factory()->create();
 
     // Action: Create recipes for this user
     // Note: This requires Recipe factory to be ready later
-    Recipe::factory()->count(3)->create(['user_id' => $user->id]);
+    Recipe::factory()->count(3)->create(['user_id' => $user->id, 'category_id' => $category->id]);
 
     // Assert: Relationship returns correct count
     expect($user->recipes)->toHaveCount(3)
         ->and($user->recipes->first())->toBeInstanceOf(Recipe::class);
+});
+
+it('can have multiple favourite recipes', function () {
+    $category = Category::first();
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
+
+    $user->favourites()->create(['recipe_id' => $recipe->id]);
+
+    expect($user->favourites)->toHaveCount(1)
+        ->and($user->favourites->first()->recipe_id)->toBe($recipe->id);
 });
 

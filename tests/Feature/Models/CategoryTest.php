@@ -4,6 +4,7 @@ use App\Models\Category;
 use App\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
 
 uses(RefreshDatabase::class);
 
@@ -52,4 +53,12 @@ it('can have many recipes linked to it', function() {
     ]);
     expect($category->recipes)->toHaveCount(3)
         ->and($category->recipes->first())->toBeInstanceOf(Recipe::class);
+});
+
+it('prevents creating categories with duplicate names', function () {
+    Category::factory()->create(['name' => 'Desserts']);
+
+    $createDuplicate = fn() => Category::factory()->create(['name' => 'Desserts']);
+
+    expect($createDuplicate)->toThrow(\Illuminate\Database\QueryException::class);
 });
