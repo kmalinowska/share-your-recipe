@@ -494,7 +494,7 @@ it('passes empty favourites array for guests', function () {
 });
 
 // ==========================================
-// tagIndex METHOD
+// 3. tagIndex METHOD
 // ==========================================
 
 it('shows only recipes assigned to the selected tag', function () {
@@ -648,4 +648,89 @@ it('passes empty favourites array for guests on tag page', function () {
 
     $response->assertStatus(200);
     $response->assertViewHas('userFavourites', []);
+});
+
+// ==========================================
+// 4. indexByCategory METHOD
+// ==========================================
+// Verifies that only recipes from the selected category are displayed, and currentCategory is passed to the view
+it('filters recipes by category and passes currentCategory to view', function () {
+    $category = Category::first();
+    $otherCategory = Category::skip(1)->first();
+
+    $recipeInCat = Recipe::factory()->create(['category_id' => $category->id]);
+    $recipeOutCat = Recipe::factory()->create(['category_id' => $otherCategory->id]);
+
+    $response = $this->get(route('recipes.category', $category->slug));
+
+    $response->assertStatus(200);
+
+    $recipesInView = $response->viewData('recipes');
+    expect($recipesInView->contains($recipeInCat))->toBeTrue()
+        ->and($recipesInView->contains($recipeOutCat))->toBeFalse();
+
+    $currentCategoryInView = $response->viewData('currentCategory');
+    expect($currentCategoryInView->id)->toBe($category->id);
+});
+
+// Verifies that 'user', 'category', and 'tags' relations are eager loaded to optimize database queries
+it('eager loads relations for category recipes', function () {
+    $category = Category::first();
+
+    $recipe = Recipe::factory()
+        ->for(User::factory())
+        ->for($category)
+        ->hasTags(2)
+        ->create();
+
+    $response = $this->get(route('recipes.category', $category->slug));
+
+    $loadedRecipe = $response->viewData('recipes')->first();
+
+    expect($loadedRecipe->relationLoaded('user'))->toBeTrue()
+        ->and($loadedRecipe->relationLoaded('category'))->toBeTrue()
+        ->and($loadedRecipe->relationLoaded('tags'))->toBeTrue();
+});
+
+// Verifies that the category recipes collection is correctly paginated with a limit of 12 items per page
+it('paginates category recipes with 12 items per page', function () {
+    $category = Category::first();
+
+    Recipe::factory(15)->create([
+        'category_id' => $category->id
+    ]);
+
+    $response = $this->get(route('recipes.category', $category->slug));
+
+    expect($response->viewData('recipes')->count())->toBe(12);
+});
+
+// Verifies that recipes within a category are ordered chronologically from newest to oldest
+it('orders category recipes from newest to oldest', function () {
+    $category = Category::first();
+
+    $oldRecipe = Recipe::factory()->create([
+        'category_id' => $category->id,
+        'title' => 'Unique Old Category Recipe',
+        'created_at' => now()->subDays(2),
+    ]);
+
+    $newRecipe = Recipe::factory()->create([
+        'category_id' => $category->id,
+        'title' => 'Unique New Category Recipe',
+        'created_at' => now(),
+    ]);
+
+    $response = $this->get(route('recipes.category', $category->slug));
+
+    // verify collection order
+    $recipes = $response->viewData('recipes');
+    expect($recipes->first()->id)->toBe($newRecipe->id)
+        ->and($recipes->last()->id)->toBe($oldRecipe->id);
+
+    // verify rendered HTML order
+    $response->assertSeeInOrder([
+        'Unique New Category Recipe',
+        'Unique Old Category Recipe'
+    ]);
 });
