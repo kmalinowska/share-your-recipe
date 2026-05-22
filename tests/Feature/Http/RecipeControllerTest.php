@@ -492,3 +492,160 @@ it('passes empty favourites array for guests', function () {
 
     $response->assertViewHas('userFavourites', []);
 });
+
+// ==========================================
+// tagIndex METHOD
+// ==========================================
+
+it('shows only recipes assigned to the selected tag', function () {
+    $tag = Tag::factory()->create(['name' => 'Keto', 'slug' => 'keto']);
+
+    $recipeWithTag = Recipe::factory()->create([
+        'title' => 'Keto Salad'
+    ]);
+
+    $recipeWithoutTag = Recipe::factory()->create([
+        'title' => 'Pasta'
+    ]);
+
+    $recipeWithTag->tags()->attach($tag->id);
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    $response->assertStatus(200);
+
+    // extract the recipes sent to the view
+    $recipesInView = $response->viewData('recipes');
+
+    // check entities in the database instead of HTML code
+    expect($recipesInView->contains($recipeWithTag))->toBeTrue()
+        ->and($recipesInView->contains($recipeWithoutTag))->toBeFalse();
+});
+
+// Verifies that 'user' and 'category' relations are eager loaded to prevent N+1 query issues on the tag page
+it('eager loads category and user relations for tagged recipes', function () {
+    // use the categories from the seeder to avoid uniqueness conflicts in PostgreSQL
+    $existingCategory = Category::first();
+    $tag = Tag::factory()->create();
+
+    $recipe = Recipe::factory()
+        ->for(User::factory())
+        ->for($existingCategory)
+        ->create();
+
+    $recipe->tags()->attach($tag);
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    $loadedRecipe = $response->viewData('recipes')->first();
+
+    expect($loadedRecipe->relationLoaded('user'))->toBeTrue()
+        ->and($loadedRecipe->relationLoaded('category'))->toBeTrue();
+});
+
+// Verifies that recipes associated with a specific tag are ordered from newest to oldest (latest first)
+it('orders tagged recipes from newest to oldest', function () {
+    $existingCategory = Category::first();
+    $tag = Tag::factory()->create();
+
+    $oldRecipe = Recipe::factory()->create([
+        'category_id' => $existingCategory->id,
+        'title' => 'Old Tagged Recipe',
+        'created_at' => now()->subDay()
+    ]);
+
+    $newRecipe = Recipe::factory()->create([
+        'category_id' => $existingCategory->id,
+        'title' => 'New Tagged Recipe',
+        'created_at' => now()
+    ]);
+
+    $oldRecipe->tags()->attach($tag);
+    $newRecipe->tags()->attach($tag);
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    $response->assertStatus(200);
+
+    $recipesInView = $response->viewData('recipes');
+
+    expect($recipesInView->first()->id)->toBe($newRecipe->id)
+        ->and($recipesInView->last()->id)->toBe($oldRecipe->id);
+});
+
+// Verifies that the tagged recipes collection is correctly paginated with a limit of 12 items per page
+it('paginates tagged recipes with 12 items per page', function () {
+    $existingCategory = Category::first();
+    $tag = Tag::factory()->create();
+
+    // create 15 recipes assigned to a safe, existing category
+    $recipes = Recipe::factory(15)->create([
+        'category_id' => $existingCategory->id
+    ]);
+
+    foreach ($recipes as $recipe) {
+        $recipe->tags()->attach($tag);
+    }
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    // check if there are exactly 12 items on the first page (according to the controller)
+    expect($response->viewData('recipes')->count())->toBe(12);
+});
+
+// Verifies that the correct, formatted dynamic title string is passed to the tag index view
+it('passes dynamic tag title to the view', function () {
+    $tag = Tag::factory()->create([
+        'name' => 'Keto'
+    ]);
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    $response->assertViewHas(
+        'title',
+        'Recipes with tag: #Keto'
+    );
+});
+
+// Verifies that the active tag slug is passed to the view to allow frontend highlighting
+it('passes active tag slug to the view', function () {
+    $tag = Tag::factory()->create();
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    $response->assertStatus(200);
+    $response->assertViewHas('activeTag', $tag->slug);
+});
+
+// FAVOURITES ON THE TAG PAGE ($userFavourites)
+// verifies that authenticated users receive their favourite recipe IDs on the tag page
+it('passes user favourites ids for authenticated user on tag page', function () {
+    $existingCategory = Category::first();
+    $user = User::factory()->create();
+    $tag = Tag::factory()->create();
+
+    $recipe = Recipe::factory()->create(['category_id' => $existingCategory->id]);
+
+    Favourite::factory()->create([
+        'user_id' => $user->id,
+        'recipe_id' => $recipe->id
+    ]);
+
+    $response = $this->actingAs($user)
+        ->get(route('recipes.tag', $tag->slug));
+
+    $response->assertStatus(200);
+    $response->assertViewHas('userFavourites', function ($favourites) use ($recipe) {
+        return in_array($recipe->id, $favourites);
+    });
+});
+
+// verifies that guests receive an empty favourites array on the tag page
+it('passes empty favourites array for guests on tag page', function () {
+    $tag = Tag::factory()->create();
+
+    $response = $this->get(route('recipes.tag', $tag->slug));
+
+    $response->assertStatus(200);
+    $response->assertViewHas('userFavourites', []);
+});
