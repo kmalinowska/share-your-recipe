@@ -36,7 +36,11 @@ class RecipeFactory extends Factory
             // Requires $this->seed(CategorySeeder::class) in test beforeEach
             'category_id'      => Category::inRandomOrder()->first()?->id ?? Category::factory(),
             'title'            => $title,
-            'preparation'      => fake()->paragraphs(2, true),
+            'preparation'      => [
+                fake()->sentence(),
+                fake()->sentence(),
+                fake()->sentence(),
+            ],
             'preparation_time' => fake()->randomElement([5, 10, 15, 20, 30, 45, 60, 90]),
             'image_path'       => null,
         ];
@@ -46,6 +50,12 @@ class RecipeFactory extends Factory
     public function withImage(): static
     {
         return $this->state(['image_path' => 'images/test-image.jpg']);
+    }
+
+    // State: recipe with specific preparation steps
+    public function withSteps(array $steps): static
+    {
+        return $this->state(['preparation' => $steps]);
     }
 
     // State: recipe for a specific user
