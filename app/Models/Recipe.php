@@ -24,6 +24,10 @@ class Recipe extends Model
 {
     use HasUuids, HasFactory;
 
+    protected $casts = [
+        'preparation' => 'array',
+    ];
+
     protected static function booted(): void {
         static::creating(function (Recipe $recipe):void {
             if(empty($recipe->slug)) {

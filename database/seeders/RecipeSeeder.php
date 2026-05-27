@@ -41,9 +41,12 @@ class RecipeSeeder extends Seeder
                 'user' => $user,
                 'category' => $breakfast,
                 'title' => 'Oatmeal with Fresh Fruit',
-                'preparation' => "Pour hot milk over the oats and let sit for 5 minutes.\n"
-                    . "Add sliced fruits, honey, and sprinkle with chia seeds.\n"
-                    . "Serve immediately in a bowl.",
+                'preparation' => [
+                    'Pour hot milk over the oats and let sit for 5 minutes.',
+                    'Add sliced fruits and honey.',
+                    'Sprinkle with chia seeds.',
+                    'Serve immediately in a bowl.',
+                ],
                 'preparation_time' => 10,
                 'tags' => ['healthy', 'quick', 'vegetarian'],
                 'ingredients' => [
@@ -59,10 +62,12 @@ class RecipeSeeder extends Seeder
                 'user' => $user,
                 'category' => $lunch,
                 'title' => 'Chicken Avocado Salad',
-                'preparation' => "Cook or grill the chicken breast and cut into strips.\n"
-                    . "Peel and dice the avocado, drizzle with lemon juice.\n"
-                    . "Mix arugula, chicken, avocado, and cherry tomatoes.\n"
-                    . "Drizzle with olive oil and season with salt and pepper.",
+                'preparation' => [
+                    'Cook or grill the chicken breast and cut into strips.',
+                    'Peel and dice the avocado, drizzle with lemon juice.',
+                    'Mix arugula, chicken, avocado, and cherry tomatoes.',
+                    'Drizzle with olive oil and season with salt and pepper.',
+                ],
                 'preparation_time' => 25,
                 'tags' => ['healthy', 'high-protein'],
                 'ingredients' => [
@@ -78,12 +83,14 @@ class RecipeSeeder extends Seeder
                 'user' => $user,
                 'category' => $dinner,
                 'title' => 'Classic Carbonara',
-                'preparation' => "Cook pasta al dente in salted water.\n"
-                    . "Fry pancetta or bacon in a dry pan until crispy.\n"
-                    . "Mix egg yolks with parmesan and pepper.\n"
-                    . "Save some pasta water, then drain the pasta.\n"
-                    . "Remove pan from heat, add pasta and bacon.\n"
-                    . "Pour in the egg mixture and stir quickly, adding pasta water for creaminess.",
+                'preparation' => [
+                    'Cook pasta al dente in salted water.',
+                    'Fry pancetta in a dry pan until crispy.',
+                    'Mix egg yolks with parmesan and pepper.',
+                    'Save some pasta water, then drain the pasta.',
+                    'Remove pan from heat, add pasta and pancetta.',
+                    'Pour in the egg mixture and stir quickly, adding pasta water for creaminess.',
+                ],
                 'preparation_time' => 30,
                 'tags' => ['italian', 'pasta', 'classic'],
                 'ingredients' => [
@@ -98,11 +105,13 @@ class RecipeSeeder extends Seeder
                 'user' => $user2,
                 'category' => $dessert,
                 'title' => 'Chocolate Brownie',
-                'preparation' => "Melt chocolate and butter in a water bath, then let cool.\n"
-                    . "Whisk eggs and sugar until fluffy.\n"
-                    . "Combine with chocolate, add flour and cocoa, mix well.\n"
-                    . "Pour into a lined baking tin.\n"
-                    . "Bake for 20 minutes at 180°C — the center should stay moist.",
+                'preparation' => [
+                    'Melt chocolate and butter in a water bath, then let cool.',
+                    'Whisk eggs and sugar until fluffy.',
+                    'Combine with chocolate, add flour and cocoa, mix well.',
+                    'Pour into a lined baking tin.',
+                    'Bake for 20 minutes at 180°C — the center should stay moist.',
+                ],
                 'preparation_time' => 40,
                 'tags' => ['chocolate', 'baking', 'sweet'],
                 'ingredients' => [
@@ -118,9 +127,11 @@ class RecipeSeeder extends Seeder
                 'user' => $user2,
                 'category' => $smoothie,
                 'title' => 'Green Spinach Smoothie',
-                'preparation' => "Put all ingredients into a blender.\n"
-                    . "Blend for 60 seconds on high speed.\n"
-                    . "Pour into a glass and serve immediately.",
+                'preparation' => [
+                    'Put all ingredients into a blender.',
+                    'Blend for 60 seconds on high speed.',
+                    'Pour into a glass and serve immediately.',
+                ],
                 'preparation_time' => 5,
                 'tags' => ['vegan', 'healthy', 'quick'],
                 'ingredients' => [
@@ -135,11 +146,13 @@ class RecipeSeeder extends Seeder
                 'user' => $user2,
                 'category' => $vegetarian,
                 'title' => 'Pumpkin Cream Soup',
-                'preparation' => "Peel pumpkin, dice it, and bake for 25 min at 200°C.\n"
-                    . "Sauté onion and garlic in butter until translucent.\n"
-                    . "Add baked pumpkin and vegetable broth, simmer for 10 minutes.\n"
-                    . "Blend into a cream, season with salt, pepper, and nutmeg.\n"
-                    . "Serve with a dollop of cream and pumpkin seeds.",
+                'preparation' => [
+                    'Peel pumpkin, dice it, and bake for 25 min at 200°C.',
+                    'Sauté onion and garlic in butter until translucent.',
+                    'Add baked pumpkin and vegetable broth, simmer for 10 minutes.',
+                    'Blend into a cream, season with salt, pepper, and nutmeg.',
+                    'Serve with a dollop of cream and pumpkin seeds.',
+                ],
                 'preparation_time' => 50,
                 'tags' => ['soup', 'vegetarian', 'autumn'],
                 'ingredients' => [
