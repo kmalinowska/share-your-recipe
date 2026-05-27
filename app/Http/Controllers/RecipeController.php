@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use App\Models\Category;
+use App\Models\Ingredient;
 use App\Models\Tag;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Http\Requests\RecipeStoreRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
@@ -59,6 +63,63 @@ class RecipeController extends Controller
             : [];
 
         return view('recipes.show', compact('recipe', 'comments', 'totalCommentsCount', 'threadCount', 'userFavourites'));
+    }
+
+    // Show the form for creating a new recipe
+    public function create(): View {
+        // download categories alphabetically
+        $categories = Category::orderBy('name')->get();
+
+        // get the tags alphabetically so they look nice in the form
+        $tags = Tag::orderBy('name')->get();
+
+        return view('recipes.create', compact('categories', 'tags'));
+    }
+
+    /**
+     * Store a newly created recipe in storage.
+     */
+    public function store(RecipeStoreRequest $request): RedirectResponse
+    {
+        // 1. Download fully verified data from Request
+        $validated = $request->validated();
+
+        // 2. Handling a photo (if uploaded)
+        $imagePath = null;
+        if ($request->hasFile('image_path') && $request->file('image_path')->isValid()) {
+            $imagePath = $request->file('image_path')->store('recipe', 'public');
+        }
+
+        // 3. Create a recipe object in the database assigned to the logged in user
+        $recipe = Recipe::create([
+            'title' => $validated['title'],
+            'preparation'      => $validated['steps'],
+            'preparation_time' => $validated['preparation_time'],
+            'category_id' => $validated['category_id'],
+            'user_id' => $request->user()->id, // Safe beating from the session, not from the input!
+            'image_path' => $imagePath,
+        ]);
+
+        // 4. Dynamic Component Association (Intermediate Table)
+        foreach ($validated['ingredients'] as $ingData) {
+            $ingredient = Ingredient::firstOrCreate(
+                ['name' => $ingData['name']],
+                ['slug' => Str::slug($ingData['name'])]
+            );
+
+            $recipe->ingredients()->attach($ingredient->id, [
+                'quantity' => $ingData['quantity'],
+                'unit' => $ingData['unit']
+            ]);
+        }
+
+        // 5. Tag association (if any selected)
+        if (!empty($validated['tags'])) {
+            $recipe->tags()->attach($validated['tags']);
+        }
+
+        // 6. Redirection successful
+        return redirect()->route('recipes.show', $recipe)->with('success', 'Recipe created successfully!');
     }
 
     // Display recipes by tags
