@@ -139,9 +139,20 @@
                                 <x-heroicon-o-fire class="size-7 text-primary" />
                                 Preparation
                             </h3>
-                            <div class="mt-6 text-base-content/80 text-lg leading-relaxed whitespace-pre-line border-l-4 border-primary/20 pl-6 md:pl-8">
-                                {{ $recipe->preparation }}
-                            </div>
+                            <ol class="mt-6 space-y-4">
+                                @forelse((array) $recipe->preparation as $index => $step)
+                                    <li class="flex gap-4 items-start">
+                                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold text-sm shadow-sm">
+                                            {{ $index + 1 }}
+                                        </div>
+                                        <p class="text-base-content/80 text-base leading-relaxed pt-1">
+                                            {{ $step }}
+                                        </p>
+                                    </li>
+                                @empty
+                                    <li class="text-sm opacity-50 italic">No preparation steps listed.</li>
+                                @endforelse
+                            </ol>
                         </div>
                     </div>
                 </div>

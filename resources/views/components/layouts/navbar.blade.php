@@ -83,7 +83,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('recipes.create') }}" class="btn btn-primary btn-sm ml-1">+
+                        <a href="{{ route('recipes.create') }}" class="btn btn-primary btn-sm ml-1">
                             <x-heroicon-o-plus-circle class="size-6"/>
                             Create Recipe
                         </a>
