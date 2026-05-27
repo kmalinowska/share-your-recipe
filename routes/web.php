@@ -25,6 +25,12 @@ Route::middleware('auth')->group(function () {
     //Favourites
     Route::get('/favourites', [FavouriteController::class, 'index'])->name('favourites.index');
     Route::post('/recipes/{recipe}/favourite', [FavouriteController::class, 'toggle'])->name('favourites.toggle');
+
+    // Create & store recipe
+    // 1. Displaying the recipe creation form (GET)
+    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
+    // 2. Support for saving data from a form in the database (POST)
+    Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
 });
 
 // Recipes
