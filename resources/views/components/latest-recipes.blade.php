@@ -1,4 +1,4 @@
-@props(['recipes'])
+@props(['recipes', 'userFavourites' => []])
 
 <section class="py-8">
     <div class="flex justify-between items-center mb-8">
@@ -12,7 +12,7 @@
     {{-- CARD GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         @forelse($recipes as $recipe)
-            <x-recipe-card :recipe="$recipe" />
+            <x-recipe-card :recipe="$recipe" :userFavourites="$userFavourites" />
         @empty
             <div class="col-span-full text-center py-20 bg-base-100 rounded-[3rem] border-2 border-dashed border-base-200">
                 <div class="flex flex-col items-center gap-3">
