@@ -27,6 +27,10 @@ class HomeController extends Controller
             ->limit(10)
             ->get();
 
-        return view('home', compact('categories', 'latestRecipes', 'recentComments'));
+        $userFavourites = auth()->check()
+            ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
+            : [];
+
+        return view('home', compact('categories', 'latestRecipes', 'recentComments', 'userFavourites'));
     }
 }

@@ -11,7 +11,7 @@
             {{-- Latest Recipes and recent comments --}}
                 {{-- Main section with recipes --}}
                 <div class="lg:col-span-2">
-                    <x-latest-recipes :recipes="$latestRecipes" />
+                    <x-latest-recipes :recipes="$latestRecipes" :userFavourites="$userFavourites" />
                 </div>
                 {{-- Sidebar with comments --}}
                 <aside>
