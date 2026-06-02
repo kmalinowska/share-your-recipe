@@ -18,15 +18,20 @@ use Illuminate\Support\Str;
     'slug',
     'preparation',
     'preparation_time',
-    'image_path'
+    'image_path',
+    'is_commentable',
 ])]
 class Recipe extends Model
 {
     use HasUuids, HasFactory;
 
-    protected $casts = [
-        'preparation' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'preparation' => 'array', // <-- KEY FIX: Automatically converts JSON to PHP Array
+            'is_commentable' => 'boolean',
+        ];
+    }
 
     protected static function booted(): void {
         static::creating(function (Recipe $recipe):void {
