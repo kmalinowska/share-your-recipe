@@ -68,3 +68,18 @@ it('can have many tags', function () {
 
     expect($recipe->tags)->toHaveCount(3);
 });
+
+it('casts is_commentable to boolean', function () {
+    $category = Category::first();
+
+    $recipe = Recipe::factory()->create(['category_id' => $category->id, 'is_commentable' => true]);
+    expect($recipe->is_commentable)->toBeBool()
+        ->and($recipe->is_commentable)->toBeTrue();
+
+    // Test for exact projection of values from the database (0 and 1 to false and true)
+    $recipe->update(['is_commentable' => 0]);
+    expect($recipe->fresh()->is_commentable)->toBeFalse();
+
+    $recipe->update(['is_commentable' => 1]);
+    expect($recipe->fresh()->is_commentable)->toBeTrue();
+});

@@ -58,3 +58,15 @@ it('belongs to a recipe', function () {
     expect($comment->recipe)->toBeInstanceOf(Recipe::class)
         ->and($comment->recipe->id)->toBe($recipe->id);
 });
+
+it('can determine if it is a root comment or a reply', function () {
+    $category = Category::first();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
+
+    $root = Comment::factory()->create(['recipe_id' => $recipe->id, 'parent_id' => null]);
+    $reply = Comment::factory()->create(['recipe_id' => $recipe->id, 'parent_id' => $root->id]);
+
+    expect($root->parent)->toBeNull()
+        ->and($reply->parent)->toBeInstanceOf(Comment::class)
+        ->and($reply->parent->id)->toBe($root->id);
+});
