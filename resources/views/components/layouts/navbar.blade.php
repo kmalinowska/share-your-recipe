@@ -88,10 +88,10 @@
                             Create Recipe
                         </a>
                     </li>
-                    <li>
+                    <li class="dropdown dropdown-end">
                         <details>
                             <summary>{{ auth()->user()->name }}</summary>
-                            <ul class="bg-base-100 dark:bg-gray-800 rounded-box shadow w-48 p-2">
+                            <ul class="dropdown-content bg-base-100 dark:bg-gray-800 rounded-box shadow w-48 p-2">
                                 <li>
                                     <a href="{{ route('profile.edit') }}">
                                         <x-heroicon-o-user class="size-6"/>
