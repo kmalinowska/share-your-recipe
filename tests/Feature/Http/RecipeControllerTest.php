@@ -869,3 +869,153 @@ it('successfully stores a valid recipe with image upload, ingredients, and tags'
     Storage::disk('public')->assertExists($recipe->image_path);
     expect($recipe->image_path)->toStartWith('recipe/');
 });
+
+// ==========================================
+// 7. UPDATE METHOD
+// ==========================================
+
+// GUEST UPDATE
+it('redirects guests to login page when attempting to update a recipe', function () {
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->put(route('recipes.update', $recipe), []);
+
+    $response->assertRedirect(route('login'));
+});
+
+// AUTHORIZATION
+it('returns 403 when a user attempts to update someone elses recipe', function () {
+    $author = User::factory()->create();
+    $stranger = User::factory()->create();
+    $recipe = Recipe::factory()->create(['user_id' => $author->id]);
+
+    $response = $this->actingAs($stranger)->put(route('recipes.update', $recipe), [
+        'title' => 'Malicious Update',
+    ]);
+
+    $response->assertStatus(403);
+});
+
+// VALIDATION
+it('requires validation for mandatory fields on updating recipe', function () {
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->put(route('recipes.update', $recipe), []);
+
+    $response->assertSessionHasErrors([
+        'title',
+        'preparation_time',
+        'category_id',
+        'steps',
+        'ingredients'
+    ]);
+});
+
+// SUCCESSFUL UPDATE (WITH IMAGE & TOGGLES & SLUG)
+it('successfully updates a recipe, regenerates slug, updates checkboxes, and manages storage images', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $category = Category::first();
+    $tag = Tag::factory()->create();
+
+    // 1. Create a recipe with an existing old image and comments enabled
+    $recipe = Recipe::factory()->create([
+        'user_id' => $user->id,
+        'title' => 'Old Title',
+        'slug' => 'old-title',
+        'image_path' => 'recipes/old-image.jpg',
+        'is_commentable' => true,
+    ]);
+
+    // Physically seed a file into the fake storage to ensure it gets deleted later
+    Storage::disk('public')->put('recipes/old-image.jpg', 'fake content');
+
+    // Prepare new data payload (disabling comments, updating title, uploading a new image)
+    $newFakeImage = UploadedFile::fake()->create('new-pancake.jpg', 100);
+
+    $updateData = [
+        'title' => 'New Delicious Title',
+        'preparation_time' => 40,
+        'category_id' => $category->id,
+        'image_path' => $newFakeImage,
+        'steps' => ['Step 1: Done', 'Step 2: Done'],
+        'ingredients' => [
+            ['name' => 'Flour', 'quantity' => '200', 'unit' => 'g']
+        ],
+        'tags' => [$tag->id],
+        // Leaving out 'is_commentable' simulates unchecking a checkbox in HTML forms
+    ];
+
+    // 2. Execute the request
+    $response = $this->actingAs($user)->put(route('recipes.update', $recipe), $updateData);
+
+    // 3. Assertions
+    $recipe->refresh();
+
+    $response->assertRedirect(route('profile.edit'));
+    $response->assertSessionHas('success', 'Recipe updated successfully!');
+
+    // Check database fields and automatic slug regeneration
+    expect($recipe->title)->toBe('New Delicious Title')
+        ->and($recipe->slug)->toBe('new-delicious-title')
+        ->and($recipe->is_commentable)->toBeFalse() // Verify unchecked checkbox behavior
+        ->and($recipe->preparation)->toBe(['Step 1: Done', 'Step 2: Done']);
+
+    // Check that the old image was deleted and the new one was stored successfully
+    Storage::disk('public')->assertMissing('recipes/old-image.jpg');
+    Storage::disk('public')->assertExists($recipe->image_path);
+
+    // Check relationship synchronization (Pivot table mapping)
+    expect($recipe->tags->contains($tag))->toBeTrue()
+        ->and($recipe->ingredients->first()->name)->toBe('flour'); // Matches Str::lower() in controller
+});
+
+
+// ==========================================
+// 8. DESTROY METHOD
+// ==========================================
+
+// GUEST DESTROY
+it('redirects guests to login page when attempting to delete a recipe', function () {
+    $recipe = Recipe::factory()->create();
+
+    $response = $this->delete(route('recipes.destroy', $recipe));
+
+    $response->assertRedirect(route('login'));
+});
+
+// AUTHORIZATION
+it('returns 403 when a user attempts to delete someone elses recipe', function () {
+    $author = User::factory()->create();
+    $stranger = User::factory()->create();
+    $recipe = Recipe::factory()->create(['user_id' => $author->id]);
+
+    $response = $this->actingAs($stranger)->delete(route('recipes.destroy', $recipe));
+
+    $response->assertStatus(403);
+    $this->assertNotNull($recipe->fresh());
+});
+
+// SUCCESSFUL DESTROY
+it('successfully deletes a recipe and removes its image from disk', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create([
+        'user_id' => $user->id,
+        'image_path' => 'recipes/to-be-deleted.jpg'
+    ]);
+
+    Storage::disk('public')->put('recipes/to-be-deleted.jpg', 'fake content');
+
+    $response = $this->actingAs($user)->delete(route('recipes.destroy', $recipe));
+
+    $response->assertRedirect(route('profile.edit'));
+    $response->assertSessionHas('success', 'Recipe deleted successfully.');
+
+    // Verify database record deletion and storage cleanup
+    $this->assertNull($recipe->fresh());
+    Storage::disk('public')->assertMissing('recipes/to-be-deleted.jpg');
+});
