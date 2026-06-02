@@ -118,3 +118,87 @@ it('does not require guest_name when user is logged in', function () {
 
     $response->assertSessionDoesntHaveErrors('guest_name');
 });
+
+// ==========================================
+// 3. LOCKING AND DELETING COMMENTS
+// ==========================================
+
+// ensure users/guests cannot post when comments are disabled by the author
+it('fails to store a comment when the recipe has comments disabled', function () {
+    $category = Category::first();
+    $recipe = Recipe::factory()->create([
+        'category_id' => $category->id,
+        'is_commentable' => false,
+    ]);
+
+    $response = $this->post(route('comments.store', $recipe), [
+        'content' => 'Trying to post on a locked recipe.',
+        'guest_name' => 'Hacker',
+    ]);
+
+    $response->assertStatus(302);
+    $response->assertSessionHas('error');
+    $this->assertDatabaseMissing('comments', [
+        'content' => 'Trying to post on a locked recipe.',
+    ]);
+});
+
+// ensure comment author can delete their own comment
+it('allows the comment author to delete their own comment', function () {
+    $category = Category::first();
+    $user = User::factory()->create();
+    $recipe = Recipe::factory()->create(['category_id' => $category->id]);
+    $comment = Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'user_id' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->delete(route('comments.destroy', $comment));
+
+    $response->assertStatus(302);
+    $this->assertNull($comment->fresh());
+});
+
+// ensure recipe owner can delete any comment on their recipe
+it('allows the recipe owner to delete any comment under their recipe', function () {
+    $category = Category::first();
+    $recipeOwner = User::factory()->create();
+    $commentAuthor = User::factory()->create();
+
+    $recipe = Recipe::factory()->create([
+        'category_id' => $category->id,
+        'user_id' => $recipeOwner->id,
+    ]);
+
+    $comment = Comment::factory()->create([
+        'recipe_id' => $recipe->id,
+        'user_id' => $commentAuthor->id,
+    ]);
+
+    // Log in as recipe author
+    $response = $this->actingAs($recipeOwner)->delete(route('comments.destroy', $comment));
+
+    $response->assertStatus(302);
+    $this->assertNull($comment->fresh());
+});
+
+// ensure administrator can delete comments
+it('allows an administrator to delete any comment', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $comment = Comment::factory()->create();
+
+    $response = $this->actingAs($admin)->delete(route('comments.destroy', $comment));
+
+    $this->assertNull($comment->fresh());
+});
+
+// ensure strangers cannot delete someone else's comment
+it('returns 403 when a random user tries to delete a comment', function () {
+    $stranger = User::factory()->create();
+    $comment = Comment::factory()->create();
+
+    $response = $this->actingAs($stranger)->delete(route('comments.destroy', $comment));
+
+    $response->assertStatus(403);
+    $this->assertNotNull($comment->fresh());
+});

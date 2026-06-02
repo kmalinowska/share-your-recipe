@@ -67,7 +67,7 @@ class CommentController extends Controller
         // Authorization logic
         $isCommentAuthor = $user->id === $comment->user_id;
         $isRecipeAuthor = $comment->recipe && $user->id === $comment->recipe->user_id;
-        $isAdmin = isset($user->is_admin) && $user->is_admin === true; // Adjust 'is_admin' to match your User model property
+        $isAdmin = $user->role === 'admin'; // Adjust 'is_admin' to match your User model property
 
         if (!$isCommentAuthor && !$isRecipeAuthor && !$isAdmin) {
             abort(403, 'You do not have permission to delete this comment.');
