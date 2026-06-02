@@ -16,8 +16,15 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
+        $recipes = $user->recipes()->latest()->get();
+        $comments = $user->comments()->with('recipe')->latest()->get();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'recipes' => $recipes,
+            'comments' => $comments,
         ]);
     }
 

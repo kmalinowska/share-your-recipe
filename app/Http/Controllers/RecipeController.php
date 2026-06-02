@@ -10,6 +10,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Http\Requests\RecipeStoreRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class RecipeController extends Controller
@@ -162,5 +163,109 @@ class RecipeController extends Controller
         return auth()->check()
             ? auth()->user()->favourites()->pluck('recipe_id')->toArray()
             : [];
+    }
+    public function edit(Recipe $recipe)
+    {
+        // Authorization: only the recipe owner can edit their recipe
+        if (auth()->id() !== $recipe->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Load data required by the edit form
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        // Display the recipe edit form
+        return view('recipes.edit', compact('recipe', 'categories', 'tags'));
+    }
+
+    public function update(Request $request, Recipe $recipe)
+    {
+        // Authorization: only the recipe owner can update their recipe
+        if (auth()->id() !== $recipe->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Validation rules
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'preparation_time' => 'required|integer|min:1',
+            'category_id' => 'required|exists:categories,id',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'ingredients' => 'required|array|min:1',
+            'ingredients.*.name' => 'required|string|max:255',
+            'ingredients.*.quantity' => 'required|string|max:50',
+            'ingredients.*.unit' => 'required|string|max:50',
+            'steps' => 'required|array|min:1',
+            'steps.*' => 'required|string',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+        ]);
+
+        // Handle Image Upload if a new one is provided
+        if ($request->hasFile('image_path')) {
+            // Delete old image from storage if exists
+            if ($recipe->image_path) {
+                Storage::disk('public')->delete($recipe->image_path);
+            }
+            $validated['image_path'] = $request->file('image_path')->store('recipes', 'public');
+        }
+
+        // Handle the comment section toggle (checkbox behavior)
+        $validated['is_commentable'] = $request->has('is_commentable');
+
+        // Update main recipe fields and preparation json array
+        $recipe->update([
+            'title' => $validated['title'],
+            'slug' => Str::slug($validated['title']),
+            'preparation_time' => $validated['preparation_time'],
+            'category_id' => $validated['category_id'],
+            'preparation' => $validated['steps'], // Maps steps array into JSON
+            'image_path' => $validated['image_path'] ?? $recipe->image_path,
+            'is_commentable' => $validated['is_commentable'],
+        ]);
+
+        // Sync Ingredients (Pivot table mapping)
+        $ingredientData = [];
+        foreach ($validated['ingredients'] as $item) {
+            // Find or create ingredient to get its global ID
+            $ingredient = Ingredient::firstOrCreate(['name' => Str::lower($item['name'])]);
+
+            $ingredientData[$ingredient->id] = [
+                'quantity' => $item['quantity'],
+                'unit' => Str::lower($item['unit']),
+            ];
+        }
+        // sync() automatically removes old relations and attaches new ones
+        $recipe->ingredients()->sync($ingredientData);
+
+        // Sync Tags
+        $recipe->tags()->sync($validated['tags'] ?? []);
+
+        // Save all changes and redirect back to the profile page
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Recipe updated successfully!');
+    }
+
+    public function destroy(Recipe $recipe)
+    {
+        // Authorization: only the recipe owner can delete their recipe
+        if (auth()->id() !== $recipe->user_id) {
+            abort(403);
+        }
+
+        // Remove recipe image from storage if it exists
+        if ($recipe->image_path) {
+            Storage::disk('public')->delete($recipe->image_path);
+        }
+
+        // Delete the recipe record
+        $recipe->delete();
+
+        // Redirect back with success message
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Recipe deleted successfully.');
     }
 }

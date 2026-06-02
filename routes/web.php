@@ -12,10 +12,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Dashboard
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('profile.edit');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Profile & Favourites  & Create recipe (with auth)
+// Profile & Favourites  & Create/Manage recipe (with auth)
 Route::middleware('auth')->group(function () {
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -26,11 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/favourites', [FavouriteController::class, 'index'])->name('favourites.index');
     Route::post('/recipes/{recipe}/favourite', [FavouriteController::class, 'toggle'])->name('favourites.toggle');
 
-    // Create & store recipe
-    // 1. Displaying the recipe creation form (GET)
+    // Recipes Management
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
-    // 2. Support for saving data from a form in the database (POST)
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+    // Comments Management
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
 // Recipes
