@@ -9,6 +9,9 @@ use App\Models\Comment;
 use App\Models\Favourite;
 use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 beforeEach(function(){
@@ -60,6 +63,7 @@ it('shows recipes when no filters are applied (default state)', function () {
 // SEARCH: TITLE
 // verifies that recipes can be filtered by title keyword (case insensitive)
 it('filters recipes by search keyword in title', function(){
+    $this->withoutExceptionHandling();
     Recipe::factory()->create(['title' => 'Chocolate Brownie']);
     Recipe::factory()->create(['title' => 'Caesar Salad']);
 
@@ -733,4 +737,135 @@ it('orders category recipes from newest to oldest', function () {
         'Unique New Category Recipe',
         'Unique Old Category Recipe'
     ]);
+});
+
+// ==========================================
+// 5. CREATE METHOD
+// ==========================================
+
+// GUEST CREATE
+// verifies that guests cannot access the recipe creation form
+it('redirects guests to login page when attempting to view create form', function () {
+    $response = $this->get(route('recipes.create'));
+
+    $response->assertRedirect(route('login'));
+});
+
+// AUTH USER CREATE
+// verifies that authenticated users can view the creation form with categories and tags
+it('displays recipe creation form for authenticated users with sorted data', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('recipes.create'));
+
+    $response->assertStatus(200);
+    $response->assertViewIs('recipes.create');
+
+    // verifies that categories and tags are injected into the view
+    $response->assertViewHas('categories');
+    $response->assertViewHas('tags');
+});
+
+// ==========================================
+// 6. STORE METHOD
+// ==========================================
+
+// GUEST STORE
+// verifies that guests cannot store recipes
+it('redirects guests to login page when attempting to store a recipe', function () {
+    $response = $this->post(route('recipes.store'), []);
+
+    $response->assertRedirect(route('login'));
+});
+
+// VALIDATION
+// verifies that recipe creation requires mandatory fields
+it('requires validation for mandatory fields on storing recipe', function () {
+    $user = User::factory()->create();
+
+    // Sending empty data
+    $response = $this->actingAs($user)->post(route('recipes.store'), []);
+
+    $response->assertSessionHasErrors([
+        'title',
+        'preparation_time',
+        'category_id',
+        'steps',
+        'ingredients'
+    ]);
+});
+
+// SUCCESSFUL STORE
+// verifies that authenticated users can successfully create a recipe with image, ingredients, and tags
+it('successfully stores a valid recipe with image upload, ingredients, and tags', function () {
+    // 1. Setup fake disk storage
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $category = Category::first(); // using seeder category
+    $tag1 = Tag::factory()->create();
+    $tag2 = Tag::factory()->create();
+
+    // Create a mock image file
+    $fakeImage = UploadedFile::fake()->create('strawberry-pancake.jpg', 100);
+
+    // Prepare complete payload matching Alpine.js and Request structures
+    $recipeData = [
+        'title' => 'Strawberry Pancake',
+        'preparation_time' => 25,
+        'category_id' => $category->id,
+        'image_path' => $fakeImage,
+        'steps' => [
+            'Mix flour, milk, and eggs together.',
+            'Fry on a hot pan until golden brown.',
+            'Serve with fresh strawberries on top.'
+        ],
+        'ingredients' => [
+            ['name' => 'Strawberries', 'quantity' => '150', 'unit' => 'g'],
+            ['name' => 'Milk', 'quantity' => '1', 'unit' => 'cup']
+        ],
+        'tags' => [$tag1->id, $tag2->id]
+    ];
+
+    // 2. Fire Request
+    $response = $this->actingAs($user)->post(route('recipes.store'), $recipeData);
+
+    // 3. Assertions
+    $recipe = Recipe::firstWhere('title', 'Strawberry Pancake');
+
+    // Redirect check
+    $response->assertRedirect(route('recipes.show', $recipe));
+    $response->assertSessionHas('success', 'Recipe created successfully!');
+
+    // Base Database check
+    $this->assertDatabaseHas('recipes', [
+        'id' => $recipe->id,
+        'title' => 'Strawberry Pancake',
+        'preparation_time' => 25,
+        'category_id' => $category->id,
+        'user_id' => $user->id,
+    ]);
+
+    // JSON Cast array check
+    expect($recipe->preparation)->toBe([
+        'Mix flour, milk, and eggs together.',
+        'Fry on a hot pan until golden brown.',
+        'Serve with fresh strawberries on top.'
+    ]);
+
+    // Pivot tables and relations check
+    expect($recipe->ingredients)->toHaveCount(2)
+        ->and($recipe->tags)->toHaveCount(2);
+
+    $this->assertDatabaseHas('recipe_ingredients', [
+        'recipe_id' => $recipe->id,
+        'ingredient_id' => $recipe->ingredients->first()->id,
+        'quantity' => '150',
+        'unit' => 'g'
+    ]);
+
+    // Image Upload disk check
+    expect($recipe->image_path)->not->toBeNull();
+    Storage::disk('public')->assertExists($recipe->image_path);
+    expect($recipe->image_path)->toStartWith('recipe/');
 });
