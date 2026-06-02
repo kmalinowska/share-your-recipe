@@ -49,12 +49,13 @@ class Recipe extends Model
         return $query->where(function ($q) use ($filters) {
             // 1. Filters by keyword (if exists)
             if (!empty($filters['search'])) {
-                $term = Str::lower($filters['search']);
+                $term = $filters['search'];
+
                 $q->where(function ($sub) use ($term) {
-                    $sub->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
-                        ->orWhereRaw('LOWER(preparation) LIKE ?', ["%{$term}%"])
-                        ->orWhereHas('ingredients', fn($i) => $i->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]))
-                        ->orWhereHas('tags', fn($t) => $t->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]));
+                    $sub->where('title', 'ILIKE', "%{$term}%")
+                        ->orWhereRaw('preparation::text ILIKE ?', ["%{$term}%"])
+                        ->orWhereHas('ingredients', fn($i) => $i->where('name', 'ILIKE', "%{$term}%"))
+                        ->orWhereHas('tags', fn($t) => $t->where('name', 'ILIKE', "%{$term}%"));
                 });
             }
 
