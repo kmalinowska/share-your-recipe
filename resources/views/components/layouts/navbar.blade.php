@@ -60,9 +60,9 @@
                             <x-heroicon-o-book-open class="size-6"/>
                             All Recipes
                         </summary>
-                        <ul class="bg-base-100 dark:bg-gray-800 rounded-box shadow w-52 p-2">
+                        <ul class="bg-base-100 rounded-box shadow w-52 p-2 z-50">
                             <li><a href="{{ route('recipes.index') }}">All</a></li>
-                            <li><hr class="my-1 border-base-200 dark:border-gray-600"></li>
+                            <li><hr class="my-1 border-base-200"></li>
                             @foreach($navCategories as $cat)
                                 <li>
                                     <a href="{{ route('recipes.category', $cat->slug) }}"
@@ -91,14 +91,14 @@
                     <li class="dropdown dropdown-end">
                         <details>
                             <summary>{{ auth()->user()->name }}</summary>
-                            <ul class="dropdown-content bg-base-100 dark:bg-gray-800 rounded-box shadow w-48 p-2">
+                            <ul class="dropdown-content bg-base-100 rounded-box shadow w-48 p-2 z-50">
                                 <li>
                                     <a href="{{ route('profile.edit') }}">
                                         <x-heroicon-o-user class="size-6"/>
                                         Profile
                                     </a>
                                 </li>
-                                <li><hr class="border-base-200 dark:border-gray-600"></li>
+                                <li><hr class="border-base-200"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
