@@ -10,8 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    /**
+     * Store a newly created comment in storage.
+     */
     public function store(Request $request, Recipe $recipe): RedirectResponse
     {
+        // Check if the comments section is open for this recipe
+        if (!$recipe->is_commentable) {
+            return back()->with('error', 'Comments are closed for this recipe.');
+        }
+
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
             'parent_id' => 'nullable|uuid|exists:comments,id',
@@ -43,5 +51,31 @@ class CommentController extends Controller
         $comment->save();
 
         return back()->with('success', 'Comment added successfully!');
+    }
+
+    // Deletes a comment
+    // Only the comment owner can perform this action
+    public function destroy(Comment $comment)
+    {
+        // Check if there is an authenticated user
+        if (!Auth::check()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $user = Auth::user();
+
+        // Authorization logic
+        $isCommentAuthor = $user->id === $comment->user_id;
+        $isRecipeAuthor = $comment->recipe && $user->id === $comment->recipe->user_id;
+        $isAdmin = isset($user->is_admin) && $user->is_admin === true; // Adjust 'is_admin' to match your User model property
+
+        if (!$isCommentAuthor && !$isRecipeAuthor && !$isAdmin) {
+            abort(403, 'You do not have permission to delete this comment.');
+        }
+
+        $comment->delete();
+
+        // Redirect back dynamically (works for both Recipe page and User Profile)
+        return back()->with('success', 'Comment deleted successfully.');
     }
 }
