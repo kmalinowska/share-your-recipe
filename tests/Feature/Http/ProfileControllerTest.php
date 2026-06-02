@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use App\Models\Recipe;
+use App\Models\Comment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
@@ -101,4 +103,27 @@ test('correct password must be provided to delete account', function () {
         ->assertRedirect(route('profile.edit'));
 
     $this->assertNotNull($user->fresh());
+});
+
+test('profile page displays users own recipes and comments', function () {
+    $user = User::factory()->create();
+
+    $recipe = Recipe::factory()->create([
+        'user_id' => $user->id,
+        'title' => 'User Unique Recipe Title'
+    ]);
+
+    $comment = Comment::factory()->create([
+        'user_id' => $user->id,
+        'content' => 'User custom comment content'
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->get(route('profile.edit'));
+
+    $response->assertOk();
+
+    $response->assertSee('User Unique Recipe Title');
+    $response->assertSee('User custom comment content');
 });
