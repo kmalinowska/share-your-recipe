@@ -53,18 +53,19 @@
                     {{-- 5. Tags & Options Component --}}
                     @include('components.recipe-form.edit.tags', ['recipe' => $recipe, 'tags' => $tags])
 
-                    {{-- Sticky/Fixed Save Button --}}
-                    <div class="fixed bottom-0 left-0 right-0 lg:static bg-white/90 backdrop-blur-md lg:bg-transparent border-t border-gray-100 lg:border-none p-4 lg:p-0 z-50 flex justify-end gap-4 items-center">
-                        <div class="max-w-4xl w-full mx-auto px-4 lg:px-0 flex justify-end items-center gap-4">
-                            <a href="{{ route('profile.edit') }}" class="text-sm font-semibold text-gray-600 hover:underline hidden sm:block">
+                    {{-- Sticky/Fixed Save Button (Mobile & Desktop UX) --}}
+                    <div class="fixed bottom-0 left-0 right-0 lg:static bg-white/95 backdrop-blur-md lg:bg-transparent border-t border-gray-100 lg:border-none p-4 lg:p-0 z-50">
+                        <div class="max-w-4xl w-full mx-auto px-4 lg:px-0 flex flex-row items-center justify-center gap-3">
+                            <a href="{{ route('profile.edit') }}"
+                               class="inline-flex justify-center items-center px-4 py-3 border border-gray-200 rounded-xl font-semibold text-base text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition min-w-[100px] sm:min-w-[120px] text-center">
                                 Cancel
                             </a>
-                            <button type="submit" class="inline-flex justify-center items-center px-6 py-3 bg-indigo-600 border border-transparent rounded-xl font-bold text-base text-white shadow-lg hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition w-full sm:w-auto sm:px-12">
+                            <button type="submit"
+                                    class="flex-1 lg:flex-none inline-flex justify-center items-center px-6 py-3 bg-indigo-600 border border-transparent rounded-xl font-bold text-base text-white shadow-lg hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition sm:px-12">
                                 {{ __('Save Changes') }}
                             </button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </div>

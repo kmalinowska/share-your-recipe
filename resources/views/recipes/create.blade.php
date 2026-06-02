@@ -48,9 +48,13 @@
                 <x-recipe-form.recipe-image-upload />
 
                 {{-- Sticky Save Button (Mobile & Desktop UX) --}}
-                <div class="fixed bottom-0 left-0 right-0 lg:static bg-base-100/90 backdrop-blur-md lg:bg-transparent border-t border-base-200 lg:border-none p-4 lg:p-0 z-50 flex justify-end">
-                    <div class="max-w-4xl w-full mx-auto px-4 lg:px-0 flex justify-end">
-                        <button type="submit" class="btn btn-primary w-full sm:w-auto sm:btn-wide text-lg font-bold shadow-lg">
+                <div class="fixed bottom-0 left-0 right-0 lg:static bg-base-100/95 backdrop-blur-md lg:bg-transparent border-t border-base-200 lg:border-none p-4 lg:p-0 z-50">
+                    <div class="max-w-4xl w-full mx-auto px-4 lg:px-0 flex flex-row items-center justify-center gap-3">
+                        <a href="{{ route('home') }}"
+                           class="btn btn-outline border-base-300 rounded-xl font-semibold text-base min-w-[100px] sm:min-w-[120px]">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary flex-1 lg:flex-none lg:btn-wide text-lg font-bold shadow-lg rounded-xl">
                             Save Recipe
                         </button>
                     </div>
