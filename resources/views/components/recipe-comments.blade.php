@@ -38,42 +38,57 @@
         {{ $comments->links() }}
     </div>
 
-    {{-- Create comments --}}
+    {{-- Create comments / Locked status --}}
     <div class="bg-base-200/50 p-8 md:p-12 rounded-[3rem] border border-base-300 shadow-sm overflow-hidden">
-        <div class="max-w-2xl mx-auto text-center"> {{-- Wewnętrzny kontener dla formularza --}}
-            <h3 class="text-3xl font-black mb-2">Leave a <span class="text-primary">Comment</span></h3>
-            <p class="text-base-content/60 mb-8 text-sm uppercase tracking-widest font-bold">We'd love to hear from you</p>
+        <div class="max-w-2xl mx-auto text-center"> {{-- Wewnętrzny kontener dla formularza/alertu --}}
 
-            <form action="{{ route('comments.store', $recipe) }}" method="POST" class="space-y-6">
-                @csrf
+            @if($recipe->is_commentable)
+                {{-- Form is shown only when comments are enabled --}}
+                <h3 class="text-3xl font-black mb-2">Leave a <span class="text-primary">Comment</span></h3>
+                <p class="text-base-content/60 mb-8 text-sm uppercase tracking-widest font-bold">We'd love to hear from you</p>
 
-                @guest
-                    <div class="form-control w-full">
-                        <input type="text" name="guest_name" placeholder="Enter your name"
-                               class="input input-bordered input-lg rounded-2xl bg-base-100 w-full focus:ring-2 focus:ring-primary/20 transition-all text-center" required>
+                <form action="{{ route('comments.store', $recipe) }}" method="POST" class="space-y-6">
+                    @csrf
+
+                    @guest
+                        <div class="form-control w-full">
+                            <input type="text" name="guest_name" placeholder="Enter your name"
+                                   class="input input-bordered input-lg rounded-2xl bg-base-100 w-full focus:ring-2 focus:ring-primary/20 transition-all text-center" required>
+                        </div>
+                    @endguest
+
+                    <div class="form-control w-full relative" x-data="{ content: '', max: 1000 }">
+                        <textarea name="content"
+                                  x-model="content"
+                                  maxlength="1000"
+                                  class="textarea textarea-bordered rounded-[2.5rem] bg-base-100 w-full h-48 p-8 text-lg focus:ring-2 focus:ring-primary/20 transition-all leading-relaxed"
+                                  placeholder="Your message goes here..." required></textarea>
+
+                        {{-- Licznik znaków --}}
+                        <div class="absolute bottom-6 right-8 text-[11px] font-mono font-black opacity-30">
+                            <span x-text="content.length"></span> / <span x-text="max"></span>
+                        </div>
                     </div>
-                @endguest
 
-                <div class="form-control w-full relative" x-data="{ content: '', max: 1000 }">
-                    <textarea name="content"
-                              x-model="content"
-                              maxlength="1000"
-                              class="textarea textarea-bordered rounded-[2.5rem] bg-base-100 w-full h-48 p-8 text-lg focus:ring-2 focus:ring-primary/20 transition-all leading-relaxed"
-                              placeholder="Your message goes here..." required></textarea>
-
-                    {{-- Licznik znaków --}}
-                    <div class="absolute bottom-6 right-8 text-[11px] font-mono font-black opacity-30">
-                        <span x-text="content.length"></span> / <span x-text="max"></span>
+                    <div class="flex justify-center pt-2">
+                        <button type="submit" class="btn btn-primary btn-xl rounded-2xl px-12 h-16 shadow-xl shadow-primary/20 gap-3 group">
+                            <span class="text-lg font-black uppercase tracking-tight">Post Comment</span>
+                            <x-heroicon-o-paper-airplane class="size-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </button>
                     </div>
+                </form>
+            @else
+                {{-- Beautiful alert shown when comments are disabled --}}
+                <div class="flex flex-col items-center py-4">
+                    <div class="p-4 bg-warning/10 text-warning rounded-full mb-4 border border-warning/20">
+                        <x-heroicon-o-lock-closed class="size-8" />
+                    </div>
+                    <h3 class="text-2xl font-black mb-2">Comments are <span class="text-warning">Locked</span></h3>
+                    <p class="text-base-content/60 max-w-md text-sm leading-relaxed">
+                        The author has disabled the ability to add new comments for this recipe.
+                    </p>
                 </div>
-
-                <div class="flex justify-center pt-2">
-                    <button type="submit" class="btn btn-primary btn-xl rounded-2xl px-12 h-16 shadow-xl shadow-primary/20 gap-3 group">
-                        <span class="text-lg font-black uppercase tracking-tight">Post Comment</span>
-                        <x-heroicon-o-paper-airplane class="size-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                    </button>
-                </div>
-            </form>
+            @endif
         </div>
     </div>
 </section>
