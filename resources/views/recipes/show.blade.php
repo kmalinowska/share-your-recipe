@@ -26,10 +26,22 @@
 
             {{-- 2. MAIN IMAGE --}}
             <div class="relative group mb-6 md:mb-8 md:px-8">
-                <div class="aspect-video md:aspect-[21/9] w-full overflow-hidden md:rounded-[3rem] shadow-2xl border-y md:border border-base-200">
-                    <img src="{{ Str::startsWith($recipe->image_path, 'http') ? $recipe->image_path : asset('storage/' . $recipe->image_path) }}"
-                         alt="{{ $recipe->title }}"
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div class="aspect-video md:aspect-[21/9] w-full overflow-hidden md:rounded-[3rem] shadow-2xl border-y md:border border-base-200 relative">
+                    @if($recipe->image_path)
+                        <img src="{{ Str::startsWith($recipe->image_path, 'http') ? $recipe->image_path : asset('storage/' . $recipe->image_path) }}"
+                             alt="{{ $recipe->title }}"
+                             {{-- Native JS instantly hides broken image and shows placeholder --}}
+                             onerror="this.style.display='none'; document.getElementById('show-placeholder').style.display='flex';"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 flex items-center justify-center text-center p-4 font-medium italic text-base-content/60 bg-base-200" />
+                    @endif
+
+                    {{-- Placeholder without available image (Always centered via absolute inset-0) --}}
+                    <div id="show-placeholder"
+                         style="display: {{ !$recipe->image_path ? 'flex' : 'none' }};"
+                         class="w-full h-full bg-base-200 flex flex-col items-center justify-center text-base-content/20 absolute inset-0">
+                        <x-heroicon-o-photo class="size-20 opacity-40" />
+                        <span class="text-sm font-bold uppercase tracking-widest mt-3">No photo available</span>
+                    </div>
                 </div>
             </div>
 

@@ -6,17 +6,21 @@
         @if($recipe->image_path)
             <img src="{{ Str::startsWith($recipe->image_path, 'http') ? $recipe->image_path : asset('storage/' . $recipe->image_path) }}"
                  alt="{{ $recipe->title }}"
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        @else
-            {{-- Placeholder without available image --}}
-            <div class="w-full h-full bg-base-200 flex flex-col items-center justify-center text-base-content/20">
-                <x-heroicon-o-photo class="size-16" />
-                <span class="text-xs font-bold uppercase tracking-widest mt-2">No photo available</span>
-            </div>
+                 {{-- Native JS instantly hides broken image and shows placeholder --}}
+                 onerror="this.style.display='none'; document.getElementById('placeholder-{{ $recipe->id }}').style.display='flex';"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 flex items-center justify-center text-center p-4 font-medium italic text-base-content/60 bg-base-200" />
         @endif
 
+        {{-- Placeholder without available image (Always centered via absolute inset-0) --}}
+        <div id="placeholder-{{ $recipe->id }}"
+             style="display: {{ !$recipe->image_path ? 'flex' : 'none' }};"
+             class="w-full h-full bg-base-200 flex flex-col items-center justify-center text-base-content/20 absolute inset-0">
+            <x-heroicon-o-photo class="size-16" />
+            <span class="text-xs font-bold uppercase tracking-widest mt-2">No photo available</span>
+        </div>
+
         {{-- Category badge in the image --}}
-        <div class="absolute top-4 left-4">
+        <div class="absolute top-4 left-4 z-10">
             <span class="badge badge-primary font-bold uppercase text-[10px] tracking-wider px-3 shadow-sm">
                 {{ $recipe->category->name }}
             </span>
@@ -72,7 +76,7 @@
                         @csrf
                         <button type="submit" class="btn btn-ghost btn-circle btn-sm group/heart">
                             @if(in_array($recipe->id, $userFavourites ?? []))
-                                {{-- Full heart for likesv--}}
+                                {{-- Full heart for likes --}}
                                 <x-heroicon-s-heart class="size-6 text-error transition-transform group-hover/heart:scale-110" />
                             @else
                                 {{-- Empty heart for unlikes --}}
