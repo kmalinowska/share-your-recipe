@@ -142,6 +142,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'plant milk', 'quantity' => '250', 'unit' => 'ml'],
                     ['name' => 'fresh ginger', 'quantity' => '1', 'unit' => 'cm'],
                 ],
+                'image_path' => 'recipe/green-spinach-smoothie.jpg',
             ],
             [
                 'user' => $user2,
@@ -166,6 +167,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'pumpkin seeds', 'quantity' => '2', 'unit' => 'tbsp'],
                     ['name' => 'nutmeg', 'quantity' => '1', 'unit' => 'pinch'],
                 ],
+                'image_path' => 'recipe/pumpkin-cream-soup.jpg',
             ],
         ];
 
