@@ -8,7 +8,7 @@
                  alt="{{ $recipe->title }}"
                  {{-- Native JS instantly hides broken image and shows placeholder --}}
                  onerror="this.style.display='none'; document.getElementById('placeholder-{{ $recipe->id }}').style.display='flex';"
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 flex items-center justify-center text-center p-4 font-medium italic text-base-content/60 bg-base-200" />
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         @endif
 
         {{-- Placeholder without available image (Always centered via absolute inset-0) --}}
