@@ -122,6 +122,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'flour', 'quantity' => '80', 'unit' => 'g'],
                     ['name' => 'cocoa powder', 'quantity' => '2', 'unit' => 'tbsp'],
                 ],
+                'image_path' => 'recipe/chocolate-brownie.jpg',
             ],
             [
                 'user' => $user2,
@@ -176,6 +177,8 @@ class RecipeSeeder extends Seeder
             $firstTag = !empty($data['tags']) ? Str::slug($data['tags'][0]) : '';
             $searchQuery = $categorySlug . ($firstTag ? ',' . $firstTag : '');
             // 1. Create or find a recipe
+            $imagePath = $data['image_path'] ?? "https://loremflickr.com/800/600/food,{$searchQuery}/all";
+
             $recipe = Recipe::firstOrCreate(
                 ['slug' => Str::slug($data['title'])],
                 [
@@ -184,7 +187,7 @@ class RecipeSeeder extends Seeder
                     'title' => $data['title'],
                     'preparation' => $data['preparation'],
                     'preparation_time' => $data['preparation_time'],
-                    'image_path' => "https://loremflickr.com/800/600/food,{$searchQuery}/all",
+                    'image_path' => $imagePath,
                 ]
             );
 
