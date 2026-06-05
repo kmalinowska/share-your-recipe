@@ -50,6 +50,21 @@ it('shows list of recipes on index page', function(){
     $response->assertViewHas('recipes');
 });
 
+// VITE PLACEHOLDER CHECK (INDEX)
+// Verifies that a recipe with a Vite asset path renders correctly on the index page
+it('renders a local Vite placeholder asset correctly on the index page', function () {
+    $recipe = Recipe::factory()->create([
+        'title' => 'Vite Placeholder Dish',
+        'image_path' => 'resources/images/placeholders/default-recipe.jpg'
+    ]);
+
+    $response = $this->get(route('recipes.index'));
+
+    $response->assertStatus(200);
+    $response->assertSee(Vite::asset('resources/images/placeholders/default-recipe.jpg'), false);
+    $response->assertDontSee('storage/resources/images/placeholders/default-recipe.jpg');
+});
+
 // DEFAULT STATE
 // verifies that recipes are displayed when no search filters are applied
 it('shows recipes when no filters are applied (default state)', function () {
@@ -283,6 +298,21 @@ it('passes recipe data to the show view', function () {
     $response = $this->get(route('recipes.show', $recipe));
 
     $response->assertViewHas('recipe', $recipe);
+});
+
+// VITE PLACEHOLDER CHECK (SHOW)
+// Verifies that a recipe with a Vite asset path renders correctly on the show page
+it('renders a local Vite placeholder asset correctly on the show page', function () {
+    $recipe = Recipe::factory()->create([
+        'title' => 'Vite Placeholder Show Dish',
+        'image_path' => 'resources/images/placeholders/default-recipe.jpg'
+    ]);
+
+    $response = $this->get(route('recipes.show', $recipe));
+
+    $response->assertStatus(200);
+    $response->assertSee(Vite::asset('resources/images/placeholders/default-recipe.jpg'), false);
+    $response->assertDontSee('storage/resources/images/placeholders/default-recipe.jpg');
 });
 
 // Verifies that Route Model Binding (`{recipe:slug}`) works properly with raw URL strings
