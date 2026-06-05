@@ -16,7 +16,7 @@
 
                     {{-- Photos --}}
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-                         style="background-image: url('{{ asset('storage/images/categories/' . $category->slug . '.jpg') }}');">
+                         style="background-image: url('{{ Vite::asset("resources/images/categories/{$category->slug}.jpg") }}');">
                     </div>
 
                     {{-- Overlay --}}
