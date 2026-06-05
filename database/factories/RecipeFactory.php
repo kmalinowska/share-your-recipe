@@ -49,7 +49,7 @@ class RecipeFactory extends Factory
     // State: recipe with an image
     public function withImage(): static
     {
-        return $this->state(['image_path' => 'images/test-image.jpg']);
+        return $this->state(['image_path' => 'resources/images/placeholders/default-recipe.jpg']);
     }
 
     // State: recipe with specific preparation steps

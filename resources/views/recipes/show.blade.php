@@ -29,7 +29,17 @@
                 {{-- Replaced aspect ratios with explicit, taller heights (400px on mobile, 600px on desktop) --}}
                 <div class="h-[400px] md:h-[600px] w-full overflow-hidden md:rounded-[3rem] shadow-2xl border-y md:border border-base-200 relative">
                     @if($recipe->image_path)
-                        <img src="{{ Str::startsWith($recipe->image_path, 'http') ? $recipe->image_path : asset('storage/' . $recipe->image_path) }}"
+                        @php
+                            if (Str::startsWith($recipe->image_path, 'http')) {
+                                $src = $recipe->image_path;
+                            } elseif (Str::startsWith($recipe->image_path, 'resources/')) {
+                                $src = Vite::asset($recipe->image_path);
+                            } else {
+                                $src = asset('storage/' . $recipe->image_path);
+                            }
+                        @endphp
+
+                        <img src="{{ $src }}"
                              alt="{{ $recipe->title }}"
                              onerror="this.style.display='none'; document.getElementById('show-placeholder').style.display='flex';"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
