@@ -6,7 +6,7 @@
             <a href="{{ route('home') }}" class="flex flex-col items-center gap-3 group">
                 <div class="avatar transition-transform group-hover:scale-105 duration-300">
                     <div class="ring-primary ring-offset-base-100 w-16 h-16 rounded-full ring-2 ring-offset-4">
-                        <img src="{{ asset('storage/images/main_logo.jpg') }}" alt="Logo" />
+                        <img src="{{ Vite::asset('resources/images/logos/main_logo.jpg') }}" alt="Logo" />
                     </div>
                 </div>
                 <span class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent mt-2">
