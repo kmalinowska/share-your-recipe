@@ -35,18 +35,11 @@ jobs:
           key: ${{ secrets.SSH_PROD_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
-      # --- DebugG
-      - name: Debug SSH Agent & Forwarding
-        run: |
-          echo "=== 1. Sprawdzenie odcisku klucza w GitHub Actions ==="
-          ssh-add -l
-
-          echo "=== 2. Test czystego Forwardingu przez kontener do GitHuba ==="
-          ssh -A -o StrictHostKeyChecking=accept-new -p 22678 deployer@get.ip.modus.ovh "ssh -T git@github.com" || true
-      # --------------------------------
-
       - name: Install Composer Dependencies
         run: composer install --no-ansi --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
-      - name: Run Deployer
-        run: vendor/bin/dep deploy -v
+      - name: Run Deployer with Native Agent Forwarding
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.SSH_PROD_KEY }}" | tr -d '\r' | ssh-add -
+          vendor/bin/dep deploy -v
