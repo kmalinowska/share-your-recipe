@@ -11,16 +11,14 @@
             <div class="group mb-6 last:mb-0 pb-6 last:pb-0 border-b last:border-0 border-base-200">
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-3">
-                        <div class="avatar {{ !$comment->user?->avatar ? 'placeholder' : '' }}">
-                            <div class="bg-primary/10 text-primary rounded-full w-8 ring-1 ring-primary/10">
+                        <div class="avatar">
+                            <div class="rounded-full w-8 ring-1 ring-primary/10">
                                 @if($comment->user?->avatar)
-                                    {{-- Displays the photo if it exists --}}
+                                    {{-- Dynamic user photo from storage --}}
                                     <img src="{{ asset('storage/' . $comment->user->avatar) }}" alt="{{ $comment->author_name }}" />
                                 @else
-                                    {{-- Displays initial if no photo or guest --}}
-                                    <span class="text-xs font-bold uppercase">
-                                        {{ substr($comment->author_name ?? 'G', 0, 1) }}
-                                    </span>
+                                    {{-- Static placeholder icon from Vite --}}
+                                    <img src="{{ Vite::asset('resources/images/placeholders/default-avatar.png') }}" alt="Default Avatar" class="object-cover" />
                                 @endif
                             </div>
                         </div>

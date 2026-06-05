@@ -10,8 +10,12 @@
 
         {{-- AVATAR --}}
         <div class="avatar">
-            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
-                {{ substr($comment->author_name ?? 'G', 0, 1) }}
+            <div class="w-10 h-10 rounded-full ring-1 ring-primary/10 overflow-hidden">
+                @if($comment->user?->avatar)
+                    <img src="{{ asset('storage/' . $comment->user->avatar) }}" alt="{{ $comment->author_name }}" class="w-full h-full object-cover" />
+                @else
+                    <img src="{{ Vite::asset('resources/images/placeholders/default-avatar.png') }}" alt="Default Avatar" class="w-full h-full object-cover" />
+                @endif
             </div>
         </div>
 
