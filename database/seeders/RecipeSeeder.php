@@ -6,16 +6,20 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Recipe;
 use App\Models\Ingredient;
 use App\Models\Tag;
 
+
 class RecipeSeeder extends Seeder
 {
     public function run(): void
     {
+        Storage::disk('public')->makeDirectory('recipe');
         // Download user
         $user = User::firstOrCreate(
             ['email' => 'user@example.com'],
@@ -179,7 +183,19 @@ class RecipeSeeder extends Seeder
             $firstTag = !empty($data['tags']) ? Str::slug($data['tags'][0]) : '';
             $searchQuery = $categorySlug . ($firstTag ? ',' . $firstTag : '');
             // 1. Create or find a recipe
-            $imagePath = $data['image_path'] ?? "https://loremflickr.com/800/600/food,{$searchQuery}/all";
+            if (isset($data['image_path'])) {
+                $imagePath = $data['image_path'];
+
+                $filename = basename($imagePath);
+                $masterPath = database_path('seeders/images/recipe/' . $filename);
+                $storageDestinationPath = storage_path('app/public/recipe/' . $filename);
+
+                if (!File::exists($storageDestinationPath) && File::exists($masterPath)) {
+                    File::copy($masterPath, $storageDestinationPath);
+                }
+            } else {
+                $imagePath = "https://loremflickr.com/800/600/food,{$searchQuery}/all";
+            }
 
             $recipe = Recipe::firstOrCreate(
                 ['slug' => Str::slug($data['title'])],
