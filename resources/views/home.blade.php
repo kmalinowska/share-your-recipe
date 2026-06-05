@@ -1,6 +1,6 @@
 <x-app-layout title="Home">
     <div class="relative min-h-screen bg-fixed bg-cover bg-center"
-        style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('{{ asset('storage/images/background.jpg') }}');">
+        style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('{{ Vite::asset('resources/images/backgrounds/background.jpg') }}');">
     {{--  Page Content      --}}
         {{-- Hero --}}
         <x-home-hero />
