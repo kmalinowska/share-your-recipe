@@ -208,7 +208,7 @@ class RecipeController extends Controller
             if ($recipe->image_path) {
                 Storage::disk('public')->delete($recipe->image_path);
             }
-            $validated['image_path'] = $request->file('image_path')->store('recipes', 'public');
+            $validated['image_path'] = $request->file('image_path')->store('recipe', 'public');
         }
 
         // Handle the comment section toggle (checkbox behavior)
