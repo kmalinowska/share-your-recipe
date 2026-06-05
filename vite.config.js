@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { globSync } from 'fast-glob';
 
 export default defineConfig({
     plugins: [
@@ -9,7 +8,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                ...globSync('resources/images/**/*.{jpg,png,svg}')
+                'resources/js/assets.js'
             ],
             refresh: true,
         }),
