@@ -7,7 +7,7 @@
 ])
 
 <div class="relative h-96 sm:h-[500px] md:h-[600px] flex items-center justify-center text-center bg-cover bg-center"
-     style="background-image: url('{{asset('/storage/images/hero.jpg')}}');">
+     style="background-image: url('{{Vite::asset('resources/images/backgrounds/hero.jpg')}}');">
 
     {{-- 1. Slightly darken the entire photo --}}
     <div class="absolute inset-0 bg-black/30 z-[1]"></div>
