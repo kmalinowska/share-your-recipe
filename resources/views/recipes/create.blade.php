@@ -3,7 +3,7 @@
     <div class="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed py-8 relative"
          style="background-image:
          linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)),
-         url('{{ asset('storage/images/recipe/recipe-background7.jpg') }}')"
+         url('{{ Vite::asset('resources/images/backgrounds/recipe-background.jpg') }}')"
          x-data="{
             ingredients: {{ json_encode(old('ingredients', [['name' => '', 'quantity' => '', 'unit' => '']])) }},
             steps: {{ json_encode(old('steps', [''])) }},
