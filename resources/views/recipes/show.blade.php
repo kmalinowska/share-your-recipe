@@ -1,6 +1,6 @@
 <x-app-layout :title="$recipe->title">
     <div class="md:py-12 bg-base-100"
-        style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('{{ asset('storage/images/recipe/recipe-background7.jpg') }}');">
+        style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('{{ Vite::asset('resources/images/backgrounds/recipe-background.jpg') }}');">
         <div class="max-w-5xl mx-auto">
 
             {{-- 1. HEADER: Title & Meta --}}
