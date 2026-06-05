@@ -1,13 +1,13 @@
 @props([
     'title' => 'Welcome to Share Your Recipe',
     'subtitle' => 'Discover and share your favourite recipes',
-    'image' => 'storage/images/cooking-background.jpg',
+    'image' => 'resources/images/backgrounds/hero.jpg',
     'ctaText' => 'Explore Recipes',
     'ctaUrl' => '/recipes',
 ])
 
 <div class="relative h-96 sm:h-[500px] md:h-[600px] flex items-center justify-center text-center bg-cover bg-center"
-     style="background-image: url('{{Vite::asset('resources/images/backgrounds/hero.jpg')}}');">
+     style="background-image: url('{{Vite::asset($image)}}');">
 
     {{-- 1. Slightly darken the entire photo --}}
     <div class="absolute inset-0 bg-black/30 z-[1]"></div>
