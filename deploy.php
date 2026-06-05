@@ -19,7 +19,9 @@ add('writable_dirs', ['bootstrap/cache', 'storage']);
 host('get.ip.modus.ovh')
     ->set('remote_user', 'deployer')
     ->set('port', 22678)
-    ->set('deploy_path', '/var/www/share-your-recipe');
+    ->set('deploy_path', '/var/www/share-your-recipe')
+    ->set('forward_agent', true);
+
 
 // Hooks
 
