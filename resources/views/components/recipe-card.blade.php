@@ -4,7 +4,17 @@
     {{-- Image section --}}
     <figure class="relative h-56 w-full overflow-hidden shrink-0">
         @if($recipe->image_path)
-            <img src="{{ Str::startsWith($recipe->image_path, 'http') ? $recipe->image_path : asset('storage/' . $recipe->image_path) }}"
+            @php
+                if (Str::startsWith($recipe->image_path, 'http')) {
+                    $src = $recipe->image_path;
+                } elseif (Str::startsWith($recipe->image_path, 'resources/')) {
+                    $src = Vite::asset($recipe->image_path);
+                } else {
+                    $src = asset('storage/' . $recipe->image_path);
+                }
+            @endphp
+
+            <img src="{{ $src }}"
                  alt="{{ $recipe->title }}"
                  {{-- Native JS instantly hides broken image and shows placeholder --}}
                  onerror="this.style.display='none'; document.getElementById('placeholder-{{ $recipe->id }}').style.display='flex';"

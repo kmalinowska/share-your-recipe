@@ -194,7 +194,7 @@ class RecipeSeeder extends Seeder
                     File::copy($masterPath, $storageDestinationPath);
                 }
             } else {
-                $imagePath = "https://loremflickr.com/800/600/food,{$searchQuery}/all";
+                $imagePath = 'resources/images/placeholders/default-recipe.jpg';
             }
 
             $recipe = Recipe::firstOrCreate(
