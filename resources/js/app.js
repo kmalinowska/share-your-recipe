@@ -6,4 +6,4 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
-import.meta.glob([ '../images/**', '../fonts/**' ]);
+import.meta.glob([ '../fonts/**' ]);

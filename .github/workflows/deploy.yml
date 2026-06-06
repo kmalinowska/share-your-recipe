@@ -1,0 +1,45 @@
+name: Deploy Application
+
+on:
+  push:
+    branch: [ "deploy" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, xml, ctype, iconv, mysql, zip, curl
+          tools: composer:v2
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      - name: Install Node Dependencies & Build Assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PROD_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Install Composer Dependencies
+        run: composer install --no-ansi --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run Deployer with Native Agent Forwarding
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.SSH_PROD_KEY }}" | tr -d '\r' | ssh-add -
+          vendor/bin/dep deploy -v
