@@ -1,6 +1,6 @@
 @props([
     'title' => 'Welcome to Share Your Recipe',
-    'subtitle' => 'Discover and share your favourite recipes',
+    'subtitle' => 'Discover & share your favourite recipes',
     'image' => 'resources/images/backgrounds/hero.jpg',
     'ctaText' => 'Explore Recipes',
     'ctaUrl' => '/recipes',
