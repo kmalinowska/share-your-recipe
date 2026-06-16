@@ -16,7 +16,7 @@ add('writable_dirs', ['bootstrap/cache', 'storage']);
 
 // Hosts
 
-host('get.ip.modus.ovh')
+host('x.modus.ovh')
     ->set('remote_user', 'deployer')
     ->set('port', 22678)
     ->set('deploy_path', '/var/www/share-your-recipe')
