@@ -43,5 +43,4 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.SSH_PROD_KEY }}" | tr -d '\r' | ssh-add -
-          export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
           vendor/bin/dep deploy -v
