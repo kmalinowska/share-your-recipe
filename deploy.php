@@ -18,6 +18,10 @@ add('writable_dirs', ['bootstrap/cache', 'storage']);
 
 host('x.modus.ovh')
     ->set('remote_user', 'deployer')
+    ->set('ssh_arguments', [
+        '-o UserKnownHostsFile=/dev/null',
+        '-o StrictHostKeyChecking=no'
+    ])
     ->set('port', 22678)
     ->set('deploy_path', '/var/www/share-your-recipe')
     ->set('forward_agent', true);
