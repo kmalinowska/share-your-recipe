@@ -17,7 +17,7 @@
                 <div class="flex-1 form-control">
                     <textarea
                         :name="`steps[${index}]`"
-                        x-model="step.text"
+                        x-model="steps[index]"
                         rows="2"
                         placeholder="Describe this step..."
                         class="textarea textarea-bordered w-full text-base focus:textarea-primary"
@@ -49,7 +49,7 @@
     {{-- Add step button --}}
     <button
         type="button"
-        @click="steps = [...steps, { text: '' }]"
+        @click="steps.push('')"
         class="btn btn-outline btn-sm btn-primary mt-2 w-full sm:w-48">
         + Add Step
     </button>

@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     // Recipes Management
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::post('/recipes/generate-tags', [RecipeController::class, 'generateTags'])->name('recipe.generate-tags');
     Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');

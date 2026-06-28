@@ -9,6 +9,8 @@ use App\Models\Tag;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Http\Requests\RecipeStoreRequest;
+use App\Http\Requests\GenerateRecipeTagsRequest;
+use App\Services\AI\RecipeTagSuggestionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -75,6 +77,39 @@ class RecipeController extends Controller
         $tags = Tag::orderBy('name')->get();
 
         return view('recipes.create', compact('categories', 'tags'));
+    }
+
+    /**
+     * GenerateTags with AI
+     */
+    public function generateTags(
+        GenerateRecipeTagsRequest $request,
+        RecipeTagSuggestionService $ai
+    ) {
+        $validated = $request->validated();
+
+        $category = Category::findOrFail(
+          $validated['category_id']
+        );
+
+        $availableTags = Tag::orderBy('name')
+            ->pluck('name')
+            ->all();
+
+        $suggestedTags = $ai->suggest(
+            title: $validated['title'],
+            category: $category->name,
+            ingredients: $validated['ingredients'],
+            steps: $validated['steps'],
+            availableTags: $availableTags,
+        );
+
+        $tagIds = Tag::whereIn('name', $suggestedTags)
+            ->pluck('id');
+
+        return response()->json([
+            'tags' => $tagIds,
+        ]);
     }
 
     /**
