@@ -40,6 +40,8 @@ jobs:
         run: composer install --no-ansi --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
       - name: Run Deployer with Native Agent Forwarding
+        env:
+          PROD_ENV: ${{ secrets.PROD_ENV }}
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.SSH_PROD_KEY }}" | tr -d '\r' | ssh-add -

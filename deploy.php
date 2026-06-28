@@ -29,6 +29,16 @@ host('x.modus.ovh')
 
 // Hooks
 
+task('deploy:secrets', function () {
+    $prodEnv = getenv('PROD_ENV');
+
+    if (!empty($prodEnv)) {
+        run("cat << 'EOF' > {{deploy_path}}/shared/.env\n" . $prodEnv . "\nEOF");
+    } else {
+        writeln("<error>Warning: Zmienna PROD_ENV jest pusta!</error>");
+    }
+});
+
 task('deploy:upload-assets', function () {
     upload('public/build', '{{release_path}}/public');
 });
@@ -40,3 +50,4 @@ task('deploy:php-fpm:reload', function () {
 });
 after('deploy:failed', 'deploy:unlock');
 after('deploy:success', 'deploy:php-fpm:reload');
+after('deploy:shared', 'deploy:secrets');
