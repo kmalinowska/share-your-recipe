@@ -4,13 +4,14 @@
          style="background-image:
          linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)),
          url('{{ Vite::asset('resources/images/backgrounds/recipe-background.jpg') }}')"
-         x-data="{
-            ingredients: {{ json_encode(old('ingredients', [['name' => '', 'quantity' => '', 'unit' => '']])) }},
-            steps: {{ json_encode(old('steps', [''])) }},
-            tags: {{ json_encode(old('tags', [])) }},
-            tagInput: '',
-            availableTags: {{ json_encode($tags) }}
-         }">
+
+         x-data="recipeForm(
+        {{ json_encode(old('ingredients', [['name' => '', 'quantity' => '', 'unit' => '']])) }},
+        {{ json_encode(old('steps', [''])) }},
+        {{ json_encode(old('tags', [])) }},
+        {{ json_encode($tags) }}
+        )"
+    >
 
         {{-- Wewnętrzny kontener trzymający strukturę strony --}}
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 relative z-10">
