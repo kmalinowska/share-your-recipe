@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -21,9 +21,7 @@ jobs:
           tools: composer:v2
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: '26'
+        uses: actions/setup-node@v6
 
       - name: Install Node Dependencies & Build Assets
         run: |
@@ -40,8 +38,6 @@ jobs:
         run: composer install --no-ansi --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
       - name: Run Deployer with Native Agent Forwarding
-        env:
-          PROD_ENV: ${{ secrets.PROD_ENV }}
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.SSH_PROD_KEY }}" | tr -d '\r' | ssh-add -
